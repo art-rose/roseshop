@@ -259,15 +259,11 @@ window.onload = ()=>{
       console.error("خطأ في الحفظ: ", e);
     }
   });
+  
 <script type="module">
-  // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
   const firebaseConfig = {
     apiKey: "AIzaSyDbEHFvX2fzhCwpZZAyGW2IGcudRZ_SV-w",
     authDomain: "roseshop-9471d.firebaseapp.com",
@@ -278,11 +274,46 @@ window.onload = ()=>{
     measurementId: "G-FP7CWDFGP2"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+  const db = getFirestore(app);
+
+  // حفظ بيانات الحريف عند إتمام الشراء
+  document.getElementById('checkout').addEventListener('click', async () => {
+    if (cart.length === 0) {
+      alert("سلتك فارغة!");
+      return;
+    }
+
+    const name = prompt("أدخل اسمك:");
+    const email = prompt("أدخل بريدك الإلكتروني:");
+
+    if (!name || !email) {
+      alert("يجب إدخال الاسم والبريد الإلكتروني");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "clients"), {
+        name: name,
+        email: email,
+        cart: cart,
+        total: total,
+        date: new Date().toISOString()
+      });
+
+      alert("✅ تم حفظ بياناتك بنجاح");
+      cart = [];
+      total = 0;
+      saveCart();
+      updateCart();
+    } catch (error) {
+      console.error("❌ خطأ في حفظ البيانات:", error);
+      alert("حدث خطأ أثناء حفظ بياناتك!");
+    }
+  });
 </script>
 </body>
 </html>
+
 
 
