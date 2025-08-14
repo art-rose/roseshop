@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>RoseShop Boutique</title>
 <style>
-/* نفس CSS تبعك */
 body { font-family: Tahoma, sans-serif; margin:0; background:#f5f5f5; }
 header { background:#ff4081; color:white; padding:15px; text-align:center; }
 header h1 { margin:0; }
@@ -14,7 +13,10 @@ header h1 { margin:0; }
 .controls input[type="text"], .controls select { padding:5px 8px; border-radius:5px; border:1px solid #ccc; }
 .products { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:20px; flex:3; }
 .product { background:white; border-radius:12px; padding:15px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+.product img { width:100%; border-radius:10px; }
+.product button { margin-top:5px; padding:8px 15px; background:#ff4081; color:white; border:none; border-radius:6px; cursor:pointer; }
 .cart { flex:1; background:white; padding:20px; border-radius:12px; height:max-content; box-shadow:0 3px 12px rgba(0,0,0,0.15); }
+.cart button { margin-top:8px; padding:10px; width:100%; border:none; border-radius:6px; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -25,7 +27,6 @@ header h1 { margin:0; }
 </header>
 
 <div class="layout">
-  <!-- البحث والفلاتر -->
   <div class="controls">
     <input type="text" id="search" placeholder="بحث عن منتج...">
     <select id="price-filter">
@@ -49,10 +50,8 @@ header h1 { margin:0; }
     </select>
   </div>
 
-  <!-- المنتجات -->
   <div class="products" id="product-list"></div>
 
-  <!-- السلة -->
   <aside class="cart">
     <h2>السلة</h2>
     <ul id="cart-items"></ul>
@@ -72,100 +71,96 @@ header h1 { margin:0; }
 </footer>
 
 <script>
-// بيانات المنتجات
 const products = [
-    {name:"Emballage Noir", price:18, image:"noir.jpg", color:"Noir"},
-    {name:"Emballage Blanc", price:18, image:"blanc.jpg", color:"Blanc"},
-    {name:"Emballage Rouge", price:18, image:"rouge.jpg", color:"Rouge"},
-    {name:"Emballage Bleu", price:20, image:"bleu.jpg", color:"Bleu"}
+  {name:"Emballage Noir", price:18, image:"https://raw.githubusercontent.com/mahdi/roseshop/main/noir.jpg", color:"Noir"},
+  {name:"Emballage Blanc", price:18, image:"https://raw.githubusercontent.com/mahdi/roseshop/main/blanc.jpg", color:"Blanc"},
+  {name:"Emballage Rouge", price:18, image:"https://raw.githubusercontent.com/mahdi/roseshop/main/rouge.jpg", color:"Rouge"},
+  {name:"Emballage Bleu", price:20, image:"https://raw.githubusercontent.com/mahdi/roseshop/main/bleu.jpg", color:"Bleu"}
 ];
 
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let total = parseFloat(localStorage.getItem('total')) || 0;
 
 function addToCart(name, price){
-    cart.push({name, price});
-    total += price;
-    saveCart();
-    updateCart();
+  cart.push({name, price});
+  total += price;
+  saveCart();
+  updateCart();
 }
 
 function updateCart(){
-    const cartItems=document.getElementById('cart-items');
-    cartItems.innerHTML='';
-    cart.forEach((item,index)=>{
-        const li=document.createElement('li');
-        li.textContent=`${item.name} - ${item.price} D`;
-        const removeBtn=document.createElement('button');
-        removeBtn.textContent='❌';
-        removeBtn.onclick=()=>{ removeFromCart(index); };
-        li.appendChild(removeBtn);
-        cartItems.appendChild(li);
-    });
-    const tva=total*0.19;
-    document.getElementById('total').textContent=total.toFixed(2);
-    document.getElementById('tva').textContent=tva.toFixed(2);
-    document.getElementById('grand-total').textContent=(total+tva).toFixed(2);
+  const cartItems=document.getElementById('cart-items');
+  cartItems.innerHTML='';
+  cart.forEach((item,index)=>{
+    const li=document.createElement('li');
+    li.textContent=`${item.name} - ${item.price} D`;
+    const removeBtn=document.createElement('button');
+    removeBtn.textContent='❌';
+    removeBtn.onclick=()=>{ removeFromCart(index); };
+    li.appendChild(removeBtn);
+    cartItems.appendChild(li);
+  });
+  const tva=total*0.19;
+  document.getElementById('total').textContent=total.toFixed(2);
+  document.getElementById('tva').textContent=tva.toFixed(2);
+  document.getElementById('grand-total').textContent=(total+tva).toFixed(2);
 }
 
 function removeFromCart(index){
-    total -= cart[index].price;
-    cart.splice(index,1);
-    saveCart();
-    updateCart();
+  total -= cart[index].price;
+  cart.splice(index,1);
+  saveCart();
+  updateCart();
 }
 
 function saveCart(){
-    localStorage.setItem('cart',JSON.stringify(cart));
-    localStorage.setItem('total',total);
+  localStorage.setItem('cart',JSON.stringify(cart));
+  localStorage.setItem('total',total);
 }
 
 document.getElementById('clear-cart').addEventListener('click',()=>{
-    cart=[]; total=0;
-    saveCart(); updateCart();
+  cart=[]; total=0;
+  saveCart(); updateCart();
 });
 
 function displayProducts(list){
-    const productList = document.getElementById('product-list');
-    productList.innerHTML='';
-    list.forEach(p=>{
-        const div = document.createElement('div');
-        div.className='product';
-        div.innerHTML=`
-            <img src="${p.image}" alt="${p.name}">
-            <h3>${p.name}</h3>
-            <p>${p.price} D</p>
-            <button onclick="addToCart('${p.name}',${p.price})">إضافة للسلة</button>
-        `;
-        productList.appendChild(div);
-    });
+  const productList = document.getElementById('product-list');
+  productList.innerHTML='';
+  list.forEach(p=>{
+    const div = document.createElement('div');
+    div.className='product';
+    div.innerHTML=`
+      <img src="${p.image}" alt="${p.name}">
+      <h3>${p.name}</h3>
+      <p>${p.price} D</p>
+      <button onclick="addToCart('${p.name}',${p.price})">إضافة للسلة</button>
+    `;
+    productList.appendChild(div);
+  });
 }
 
 function filterProducts() {
-    const searchText = document.getElementById('search').value.toLowerCase();
-    const priceVal = document.getElementById('price-filter').value;
-    const colorVal = document.getElementById('color-filter').value;
-    const sortVal = document.getElementById('sort-filter').value;
+  const searchText = document.getElementById('search').value.toLowerCase();
+  const priceVal = document.getElementById('price-filter').value;
+  const colorVal = document.getElementById('color-filter').value;
+  const sortVal = document.getElementById('sort-filter').value;
 
-    let filtered = products.filter(p => p.name.toLowerCase().includes(searchText));
+  let filtered = products.filter(p => p.name.toLowerCase().includes(searchText));
+  if(priceVal){
+    const [min,max] = priceVal.split('-').map(Number);
+    filtered = filtered.filter(p => p.price >= min && p.price <= max);
+  }
+  if(colorVal){
+    filtered = filtered.filter(p => p.color === colorVal);
+  }
+  if(sortVal){
+    if(sortVal === 'price-asc') filtered.sort((a,b)=>a.price-b.price);
+    else if(sortVal === 'price-desc') filtered.sort((a,b)=>b.price-a.price);
+    else if(sortVal === 'name-asc') filtered.sort((a,b)=>a.name.localeCompare(b.name));
+    else if(sortVal === 'name-desc') filtered.sort((a,b)=>b.name.localeCompare(a.name));
+  }
 
-    if(priceVal){
-        const [min,max] = priceVal.split('-').map(Number);
-        filtered = filtered.filter(p => p.price >= min && p.price <= max);
-    }
-
-    if(colorVal){
-        filtered = filtered.filter(p => p.color === colorVal);
-    }
-
-    if(sortVal){
-        if(sortVal === 'price-asc') filtered.sort((a,b)=>a.price-b.price);
-        else if(sortVal === 'price-desc') filtered.sort((a,b)=>b.price-a.price);
-        else if(sortVal === 'name-asc') filtered.sort((a,b)=>a.name.localeCompare(b.name));
-        else if(sortVal === 'name-desc') filtered.sort((a,b)=>b.name.localeCompare(a.name));
-    }
-
-    displayProducts(filtered);
+  displayProducts(filtered);
 }
 
 document.getElementById('search').addEventListener('input', filterProducts);
@@ -174,12 +169,11 @@ document.getElementById('color-filter').addEventListener('change', filterProduct
 document.getElementById('sort-filter').addEventListener('change', filterProducts);
 
 window.onload = ()=>{
-    filterProducts();
-    updateCart();
+  filterProducts();
+  updateCart();
 };
 </script>
 
-<!-- كود Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
   import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
