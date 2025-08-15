@@ -10,66 +10,67 @@
 
 <header>
   <h1>🛍️ RoseShop Boutique</h1>
-  <p>أفضل المنتجات بأسعار مناسبة</p>
+  <p>Les meilleurs produits au meilleur prix</p>
 </header>
 
 <div class="layout">
   <div class="controls">
-    <input type="text" id="search" placeholder="بحث عن منتج...">
+    <input type="text" id="search" placeholder="Rechercher un produit...">
     <select id="price-filter">
-      <option value="">جميع الأسعار</option>
+      <option value="">Tous les prix</option>
       <option value="0-18">≤ 18 D</option>
       <option value="19-30">≥ 19 D</option>
     </select>
     <select id="color-filter">
-      <option value="">جميع الألوان</option>
+      <option value="">Toutes les couleurs</option>
       <option value="Noir">Noir</option>
       <option value="Blanc">Blanc</option>
       <option value="Rouge">Rouge</option>
       <option value="Bleu">Bleu</option>
     </select>
     <select id="sort-filter">
-      <option value="">ترتيب</option>
-      <option value="price-asc">السعر تصاعدي</option>
-      <option value="price-desc">السعر تنازلي</option>
-      <option value="name-asc">الاسم A → Z</option>
-      <option value="name-desc">الاسم Z → A</option>
+      <option value="">Trier</option>
+      <option value="price-asc">Prix croissant</option>
+      <option value="price-desc">Prix décroissant</option>
+      <option value="name-asc">Nom A → Z</option>
+      <option value="name-desc">Nom Z → A</option>
     </select>
   </div>
 
   <div class="products" id="product-list"></div>
 
   <aside class="cart">
-    <h2>السلة</h2>
+    <h2>Panier</h2>
     <ul id="cart-items"></ul>
     <div>
-      <div><span>المجموع:</span> <strong><span id="total">0</span> D</strong></div>
+      <div><span>Sous-total:</span> <strong><span id="total">0</span> D</strong></div>
       <div><span>TVA 19%:</span> <strong><span id="tva">0</span> D</strong></div>
       <hr/>
-      <div><span>المجموع النهائي:</span> <strong><span id="grand-total">0</span> D</strong></div>
+      <div><span>Total TTC:</span> <strong><span id="grand-total">0</span> D</strong></div>
     </div>
-    <button id="checkout">إتمام الشراء</button>
-    <button id="clear-cart">إفراغ السلة</button>
+    <button id="checkout">Passer la commande</button>
+    <button id="clear-cart">Vider le panier</button>
   </aside>
 </div>
 
-<!-- زر دخول الأدمن -->
+<!-- Bouton Admin -->
 <div style="text-align:center; margin:20px;">
-  <button id="admin-login">🔑 دخول الأدمن</button>
+  <button id="admin-login">🔑 Espace Admin</button>
 </div>
 
-<!-- جدول الحرفاء (مخفي) -->
+<!-- Liste Clients (cachée) -->
 <section class="clients" id="clients-section" style="display:none;">
-  <h2>📋 قائمة الحرفاء</h2>
+  <h2>📋 Liste des Clients</h2>
   <table>
     <thead>
       <tr>
-        <th>الاسم</th>
-        <th>الهاتف</th>
-        <th>العنوان</th>
-        <th>عدد المنتجات</th>
-        <th>المبلغ</th>
-        <th>التاريخ</th>
+        <th>Nom</th>
+        <th>Téléphone</th>
+        <th>Adresse</th>
+        <th>Produits</th>
+        <th>Montant</th>
+        <th>Date</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody id="clients-list"></tbody>
@@ -83,4 +84,3 @@
 <script type="module" src="script.js"></script>
 </body>
 </html>
-
