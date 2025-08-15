@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-// إعداد Firebase
+// Config Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDbEHFvX2fzhCwpZZAyGW2IGcudRZ_SV-w",
   authDomain: "roseshop-9471d.firebaseapp.com",
@@ -14,7 +14,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// المنتجات
+// Produits
 const products = [
   {name:"Emballage Noir", price:18, image:"https://raw.githubusercontent.com/mahdi/roseshop/main/noir.jpg", color:"Noir"},
   {name:"Emballage Blanc", price:18, image:"https://raw.githubusercontent.com/mahdi/roseshop/main/blanc.jpg", color:"Blanc"},
@@ -25,14 +25,14 @@ const products = [
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let total = parseFloat(localStorage.getItem('total')) || 0;
 
-// إضافة للسلة
+// Ajouter au panier
 function addToCart(name, price){
   cart.push({name, price});
   total += price;
   saveCart(); updateCart();
 }
 
-// تحديث السلة
+// Mise à jour panier
 function updateCart(){
   const cartItems=document.getElementById('cart-items');
   cartItems.innerHTML='';
@@ -51,20 +51,20 @@ function updateCart(){
   document.getElementById('grand-total').textContent=(total+tva).toFixed(2);
 }
 
-// حذف من السلة
+// Supprimer du panier
 function removeFromCart(index){
   total -= cart[index].price;
   cart.splice(index,1);
   saveCart(); updateCart();
 }
 
-// حفظ السلة
+// Sauvegarde panier
 function saveCart(){
   localStorage.setItem('cart',JSON.stringify(cart));
   localStorage.setItem('total',total);
 }
 
-// عرض المنتجات
+// Afficher produits
 function displayProducts(list){
   const productList=document.getElementById('product-list');
   productList.innerHTML='';
@@ -75,14 +75,14 @@ function displayProducts(list){
       <img src="${p.image}" alt="${p.name}">
       <h3>${p.name}</h3>
       <p>${p.price} D</p>
-      <button onclick="addToCart('${p.name}',${p.price})">إضافة للسلة</button>
+      <button onclick="addToCart('${p.name}',${p.price})">Ajouter au Panier</button>
     `;
     productList.appendChild(div);
   });
 }
-window.addToCart = addToCart; // مهم للـ onclick
+window.addToCart = addToCart;
 
-// فلترة المنتجات
+// Filtrer
 function filterProducts() {
   const searchText=document.getElementById('search').value.toLowerCase();
   const priceVal=document.getElementById('price-filter').value;
@@ -109,15 +109,15 @@ document.getElementById('price-filter').addEventListener('change', filterProduct
 document.getElementById('color-filter').addEventListener('change', filterProducts);
 document.getElementById('sort-filter').addEventListener('change', filterProducts);
 
-// Checkout
+// Commander
 document.getElementById('checkout').addEventListener('click', async ()=>{
-  if(cart.length===0){ alert("سلتك فارغة!"); return; }
-  const name=prompt("أدخل اسمك:");
-  const phone=prompt("📞 أدخل رقم هاتفك:");
-  const address=prompt("📍 أدخل عنوانك:");
+  if(cart.length===0){ alert("Votre panier est vide !"); return; }
+  const name=prompt("Entrez votre Nom:");
+  const phone=prompt("📞 Entrez votre Téléphone:");
+  const address=prompt("📍 Entrez votre Adresse:");
 
   if(!name || !phone || !address){
-    alert("يجب إدخال الاسم، الهاتف و العنوان");
+    alert("Vous devez remplir tous les champs !");
     return;
   }
 
@@ -127,37 +127,37 @@ document.getElementById('checkout').addEventListener('click', async ()=>{
       cart, total,
       date:new Date().toLocaleString()
     });
-    alert("✅ تم حفظ بياناتك بنجاح في قاعدة البيانات");
+    alert("✅ Commande enregistrée avec succès !");
     cart=[]; total=0; saveCart(); updateCart();
   } catch(err){
-    console.error("❌ خطأ:", err);
-    alert("حدث خطأ أثناء حفظ بياناتك!");
+    console.error("❌ Erreur:", err);
+    alert("Une erreur est survenue !");
   }
 });
 
-// زر إفراغ السلة
+// Vider panier
 document.getElementById('clear-cart').addEventListener('click',()=>{
   cart=[]; total=0; saveCart(); updateCart();
 });
 
-// زر الأدمن
+// Admin
 document.getElementById("admin-login").addEventListener("click", async ()=>{
-  const password=prompt("أدخل كلمة سر الأدمن:");
-  if(password==="12345"){ // غير كلمة السر
+  const password=prompt("Entrez le mot de passe Admin:");
+  if(password==="12345"){ // changer le mot de passe
     document.getElementById("clients-section").style.display="block";
     loadClients();
   } else {
-    alert("❌ كلمة السر غير صحيحة!");
+    alert("❌ Mot de passe incorrect !");
   }
 });
 
-// تحميل الحرفاء
+// Charger clients
 async function loadClients(){
   const querySnapshot=await getDocs(collection(db,"clients"));
   const clientsList=document.getElementById("clients-list");
   clientsList.innerHTML="";
-  querySnapshot.forEach(doc=>{
-    const c=doc.data();
+  querySnapshot.forEach(d=>{
+    const c=d.data();
     const tr=document.createElement("tr");
     tr.innerHTML=`
       <td>${c.name}</td>
@@ -166,10 +166,19 @@ async function loadClients(){
       <td>${c.cart.length}</td>
       <td>${c.total} D</td>
       <td>${c.date}</td>
+      <td><button onclick="deleteClient('${d.id}')">🗑️ Supprimer</button></td>
     `;
     clientsList.appendChild(tr);
   });
 }
 
-// تحميل أولي
+// Supprimer client
+window.deleteClient = async function(id){
+  if(confirm("Voulez-vous supprimer ce client ?")){
+    await deleteDoc(doc(db,"clients",id));
+    loadClients();
+  }
+}
+
+// Initialiser
 window.onload=()=>{ filterProducts(); updateCart(); }
