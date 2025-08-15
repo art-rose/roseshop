@@ -72,12 +72,13 @@ header h1 { margin:0; }
 
 <script>
 const products = [
-  {name:"Emballage Noir", price:18, image:"https://raw.githubusercontent.com/mahdi/roseshop/main/noir.jpg", color:"Noir"},
-  {name:"Emballage Blanc", price:18, image:"https://raw.githubusercontent.com/mahdi/roseshop/main/blanc.jpg", color:"Blanc"},
-  {name:"Emballage Rouge", price:18, image:"https://raw.githubusercontent.com/mahdi/roseshop/main/rouge.jpg", color:"Rouge"},
-  {name:"Emballage Bleu", price:20, image:"https://raw.githubusercontent.com/mahdi/roseshop/main/bleu.jpg", color:"Bleu"}
+  {name:"Emballage Noir", price:18, image:"images/Noir.jpg", color:"Noir"},
+  {name:"Emballage Blanc", price:18, image:"images/Blanc.jpg", color:"Blanc"},
+  {name:"Emballage Rouge", price:18, image:"images/Rouge.jpg", color:"Rouge"},
+  {name:"Emballage Bleu", price:20, image:"images/Bleu.jpg", color:"Bleu"}
 ];
 
+// باقي الكود كما هو
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let total = parseFloat(localStorage.getItem('total')) || 0;
 
@@ -174,55 +175,7 @@ window.onload = ()=>{
 };
 </script>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDbEHFvX2fzhCwpZZAyGW2IGcudRZ_SV-w",
-    authDomain: "roseshop-9471d.firebaseapp.com",
-    projectId: "roseshop-9471d",
-    storageBucket: "roseshop-9471d.firebasestorage.app",
-    messagingSenderId: "291783054639",
-    appId: "1:291783054639:web:0628582f9f4f41a8bb3dda",
-    measurementId: "G-FP7CWDFGP2"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  document.getElementById('checkout').addEventListener('click', async () => {
-    if (cart.length === 0) {
-      alert("سلتك فارغة!");
-      return;
-    }
-    const name = prompt("أدخل اسمك:");
-    const email = prompt("أدخل بريدك الإلكتروني:");
-
-    if (!name || !email) {
-      alert("يجب إدخال الاسم والبريد الإلكتروني");
-      return;
-    }
-
-    try {
-      await addDoc(collection(db, "clients"), {
-        name: name,
-        email: email,
-        cart: cart,
-        total: total,
-        date: new Date().toISOString()
-      });
-      alert("✅ تم حفظ بياناتك بنجاح في قاعدة البيانات");
-      cart = [];
-      total = 0;
-      saveCart();
-      updateCart();
-    } catch (error) {
-      console.error("❌ خطأ في حفظ البيانات:", error);
-      alert("حدث خطأ أثناء حفظ بياناتك!");
-    }
-  });
-</script>
 
 </body>
 </html>
+
