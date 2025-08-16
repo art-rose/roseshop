@@ -1,88 +1,42 @@
 body {
-  font-family: Arial, sans-serif;
-  background: #ffeef5;
-  margin: 0;
-  padding: 0;
+  margin:0; font-family:Arial, sans-serif;
+  background:#fff0f5;
 }
-
 header {
-  background: #ff4d88;
-  color: white;
-  text-align: center;
-  padding: 20px;
-  font-size: 24px;
+  background:#ff4081;
+  color:white; padding:20px; text-align:center;
 }
-
-main {
-  display: flex;
-  justify-content: space-around;
-  padding: 20px;
-}
-
 .products {
-  display: flex;
-  gap: 20px;
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:20px; padding:20px;
 }
-
 .product {
-  background: white;
-  border-radius: 12px;
-  padding: 15px;
-  text-align: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  background:white; border-radius:12px; padding:15px; text-align:center;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
 }
-
-.product img {
-  width: 100px;
-  border-radius: 8px;
+.product:hover {
+  transform:translateY(-5px) scale(1.02);
+  box-shadow:0 4px 15px rgba(0,0,0,0.2);
 }
-
-.product h3 {
-  color: #ff4d88;
-}
-
-.product button {
-  margin-top: 10px;
-  background: #ff4d88;
-  color: white;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
+.product img { width:100%; border-radius:10px; }
+.product h3 { color:#e91e63; }
 .cart {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  min-width: 250px;
+  background:white; padding:20px; border-radius:12px; margin:20px;
+  box-shadow:0 3px 12px rgba(0,0,0,0.15);
 }
-
-.cart input {
-  display: block;
-  width: 100%;
-  margin: 5px 0;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+.cart input, .cart button {
+  display:block; width:100%; margin:10px 0; padding:10px;
+  border-radius:6px; border:1px solid #ccc;
 }
-
 .cart button {
-  background: #ff4d88;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 10px;
+  background:#ff4081; color:white; border:none; cursor:pointer;
 }
-
-#adminBtn {
-  margin: 20px;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+.cart button:hover { background:#e91e63; }
+footer {
+  text-align:center; padding:15px;
 }
+footer a {
+  color:#333; text-decoration:none;
+}
+footer a:hover { color:#e91e63; }
