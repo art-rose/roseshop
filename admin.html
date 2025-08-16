@@ -1,0 +1,47 @@
+<script>
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  function login() {
+    const pass = document.getElementById("password").value;
+    if (pass !== "admin123") {
+      alert("Mot de passe incorrect !");
+      return;
+    }
+    loadOrders();
+  }
+
+  function loadOrders() {
+    db.collection("commandes").orderBy("date", "desc").get().then(snapshot => {
+      let html = "<h2>Liste des Commandes</h2>";
+      snapshot.forEach(doc => {
+        const d = doc.data();
+        html += `<div class='cart'>
+          <p><b>${d.nom}</b> - ${d.telephone}</p>
+          <p>${d.adresse}</p>
+          <p>Total : ${d.total} €</p>
+          <button onclick="deleteOrder('${doc.id}')">🗑 Supprimer</button>
+          <hr>
+        </div>`;
+      });
+      document.getElementById("orders").innerHTML = html;
+    });
+  }
+
+  function deleteOrder(id) {
+    if (confirm("Êtes-vous sûr de vouloir supprimer cette commande ?")) {
+      db.collection("commandes").doc(id).delete().then(() => {
+        alert("Commande supprimée ✅");
+        loadOrders(); // إعادة التحديث
+      });
+    }
+  }
+</script>
