@@ -1,4 +1,4 @@
-// Config Firebase (remplace par tes vraies infos)
+// Config Firebase (⚠️ Remplace par tes vraies infos depuis Firebase Console)
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -12,9 +12,9 @@ const db = firebase.firestore();
 
 // Liste de produits
 const produits = [
-  { nom: "Rose Rouge", prix: 10, image: "images/rose1.jpg" },
-  { nom: "Rose Blanche", prix: 12, image: "images/rose2.jpg" },
-  { nom: "Rose Rose", prix: 8, image: "images/rose3.jpg" }
+  { nom: "Emballage Noir", prix: 10, image: "images/noir.jpg" },
+  { nom: "Emballage Blanc", prix: 12, image: "images/blanc.jpg" },
+  { nom: "Emballage Bleu", prix: 8, image: "images/bleu.jpg" }
 ];
 
 let panier = [];
@@ -68,6 +68,8 @@ if(btnValider){
         alert("Commande envoyée !");
         panier = [];
         majPanier();
+      }).catch(err=>{
+        alert("Erreur : " + err.message);
       });
     } else {
       alert("Complétez vos informations et ajoutez des produits.");
