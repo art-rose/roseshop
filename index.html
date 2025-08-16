@@ -4,9 +4,6 @@
   <meta charset="UTF-8">
   <title>RoseShop Boutique</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 </head>
 <body>
   <header>
@@ -14,19 +11,26 @@
   </header>
 
   <main>
-    <div class="products" id="products"></div>
-    <div class="cart" id="cart">
+    <section class="products" id="products"></section>
+
+    <aside class="cart">
       <h2>🛒 Mon Panier</h2>
       <p id="total">Total : 0 €</p>
-      <input type="text" id="name" placeholder="Nom complet">
-      <input type="text" id="phone" placeholder="Numéro de téléphone">
-      <input type="text" id="address" placeholder="Adresse">
-      <button onclick="validerCommande()">Valider la commande</button>
-    </div>
+      <input type="text" id="nom" placeholder="Nom complet">
+      <input type="text" id="telephone" placeholder="Numéro de téléphone">
+      <input type="text" id="adresse" placeholder="Adresse">
+      <button id="valider">Valider la commande</button>
+    </aside>
   </main>
 
-  <button id="adminBtn" onclick="location.href='admin.html'">🔑 Espace Admin</button>
+  <footer>
+    <a href="admin.html">🔑 Espace Admin</a>
+  </footer>
 
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
+
