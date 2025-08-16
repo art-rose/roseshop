@@ -1,4 +1,4 @@
-// ✅ Firebase Config (ضع config الخاص بك من Firebase)
+// Config Firebase (remplace par tes vraies infos)
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -7,65 +7,107 @@ const firebaseConfig = {
   messagingSenderId: "YOUR_SENDER_ID",
   appId: "YOUR_APP_ID"
 };
-
-// Init Firebase
-const app = firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-const products = [
-  { name: "Emballage Noir", price: 18, img: "https://via.placeholder.com/100x100/000000/ffffff?text=Noir" },
-  { name: "Emballage Blanc", price: 18, img: "https://via.placeholder.com/100x100/fafafa/000000?text=Blanc" },
-  { name: "Emballage Rouge", price: 18, img: "https://via.placeholder.com/100x100/ff0000/ffffff?text=Rouge" },
-  { name: "Emballage Bleu", price: 20, img: "https://via.placeholder.com/100x100/0000ff/ffffff?text=Bleu" }
+// Liste de produits
+const produits = [
+  { nom: "Rose Rouge", prix: 10, image: "images/rose1.jpg" },
+  { nom: "Rose Blanche", prix: 12, image: "images/rose2.jpg" },
+  { nom: "Rose Rose", prix: 8, image: "images/rose3.jpg" }
 ];
 
-let cart = [];
-let total = 0;
+let panier = [];
 
-function renderProducts() {
-  const container = document.getElementById("products");
-  products.forEach((p, i) => {
+// Affichage produits
+const produitsDiv = document.getElementById("products");
+if(produitsDiv){
+  produits.forEach((p,i) => {
     const div = document.createElement("div");
     div.className = "product";
     div.innerHTML = `
-      <img src="${p.img}" alt="${p.name}">
-      <h3>${p.name}</h3>
-      <p>${p.price} €</p>
-      <button onclick="addToCart(${i})">Ajouter au panier</button>
+      <img src="${p.image}" alt="${p.nom}">
+      <h3>${p.nom}</h3>
+      <p>${p.prix} €</p>
+      <button onclick="ajouterAuPanier(${i})">Ajouter</button>
     `;
-    container.appendChild(div);
+    produitsDiv.appendChild(div);
   });
 }
 
-function addToCart(i) {
-  cart.push(products[i]);
-  total += products[i].price;
+// Ajouter au panier
+function ajouterAuPanier(i){
+  panier.push(produits[i]);
+  majPanier();
+}
+
+// Mise à jour panier
+function majPanier(){
+  const total = panier.reduce((s,p)=>s+p.prix,0);
   document.getElementById("total").innerText = "Total : " + total + " €";
 }
 
-function validerCommande() {
-  const name = document.getElementById("name").value;
-  const phone = document.getElementById("phone").value;
-  const address = document.getElementById("address").value;
+// Valider commande
+const btnValider = document.getElementById("valider");
+if(btnValider){
+  btnValider.addEventListener("click", ()=>{
+    const nom = document.getElementById("nom").value;
+    const tel = document.getElementById("telephone").value;
+    const adr = document.getElementById("adresse").value;
+    const total = panier.reduce((s,p)=>s+p.prix,0);
 
-  if (!name || !phone || !address || cart.length === 0) {
-    alert("⚠️ Veuillez remplir tous les champs et ajouter des produits !");
-    return;
-  }
-
-  db.collection("commandes").add({
-    nom: name,
-    telephone: phone,
-    adresse: address,
-    produits: cart,
-    total: total,
-    date: new Date()
-  }).then(() => {
-    alert("✅ Commande validée avec succès !");
-    cart = [];
-    total = 0;
-    document.getElementById("total").innerText = "Total : 0 €";
+    if(nom && tel && adr && panier.length>0){
+      db.collection("commandes").add({
+        nom: nom,
+        telephone: tel,
+        adresse: adr,
+        total: total,
+        panier: panier,
+        date: new Date()
+      }).then(()=>{
+        alert("Commande envoyée !");
+        panier = [];
+        majPanier();
+      });
+    } else {
+      alert("Complétez vos informations et ajoutez des produits.");
+    }
   });
 }
 
-renderProducts();
+// Charger commandes (Admin)
+function chargerCommandes(){
+  const commandesDiv = document.getElementById("commandes");
+  db.collection("commandes").orderBy("date","desc").onSnapshot(snap=>{
+    commandesDiv.innerHTML="";
+    snap.forEach(doc=>{
+      const d = doc.data();
+      const div = document.createElement("div");
+      div.className="commande";
+      div.innerHTML = `
+        <p><strong>Nom:</strong> ${d.nom}</p>
+        <p><strong>Téléphone:</strong> ${d.telephone}</p>
+        <p><strong>Adresse:</strong> ${d.adresse}</p>
+        <p><strong>Total:</strong> ${d.total} €</p>
+        <div class="produits">
+          ${d.panier.map(p=>`
+            <div class="produit">
+              <img src="${p.image}">
+              <p>${p.nom}</p>
+              <p>${p.prix} €</p>
+            </div>
+          `).join("")}
+        </div>
+        <button onclick="supprimerCommande('${doc.id}')">🗑 Supprimer</button>
+      `;
+      commandesDiv.appendChild(div);
+    });
+  });
+}
+
+// Supprimer commande
+function supprimerCommande(id){
+  if(confirm("Supprimer cette commande ?")){
+    db.collection("commandes").doc(id).delete();
+  }
+}
