@@ -1,21 +1,27 @@
 const products = [
   {
     id: 1,
-    name: "ورد أحمر",
-    price: 50,
-    image: "images/rose-red.jpg"
+    name: "Emballage Rouge",
+    price: 12,
+    image: "images/Rouge.jpg"
   },
   {
     id: 2,
-    name: "ورد أبيض",
-    price: 40,
-    image: "images/rose-white.jpg"
+    name: "Emballage Blanc",
+    price: 18,
+    image: "images/Blanc.jpg"
   },
   {
     id: 3,
-    name: "باقة ورد ملونة",
-    price: 120,
-    image: "images/bouquet.jpg"
+    name: "Emballage Noir",
+    price:18,
+    image: "images/Noir.jpg"
+  }
+   {
+    id: 4,
+    name: "Emballage Blue",
+    price: 18,
+    image: "images/Blue.jpg"
   }
 ];
 
@@ -40,3 +46,4 @@ function addToCart(id) {
   const product = products.find(p => p.id === id);
   alert(`تمت إضافة "${product.name}" إلى السلة ✅`);
 }
+
