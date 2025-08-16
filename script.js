@@ -1,115 +1,26 @@
-// Config Firebase (⚠️ Remplace par tes vraies infos depuis Firebase Console)
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// Liste de produits
-const produits = [
-  { nom: "Emballage Noir", prix: 10, image: "images/noir.jpg" },
-  { nom: "Emballage Blanc", prix: 12, image: "images/blanc.jpg" },
-  { nom: "Emballage Bleu", prix: 8, image: "images/bleu.jpg" }
-];
-
-let panier = [];
-
-// Affichage produits
-const produitsDiv = document.getElementById("products");
-if(produitsDiv){
-  produits.forEach((p,i) => {
-    const div = document.createElement("div");
-    div.className = "product";
-    div.innerHTML = `
-      <img src="${p.image}" alt="${p.nom}">
-      <h3>${p.nom}</h3>
-      <p>${p.prix} €</p>
-      <button onclick="ajouterAuPanier(${i})">Ajouter</button>
-    `;
-    produitsDiv.appendChild(div);
-  });
+.product {
+  background:white; border-radius:12px; padding:15px; text-align:center;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1); transition: transform 0.3s, box-shadow 0.3s;
 }
-
-// Ajouter au panier
-function ajouterAuPanier(i){
-  panier.push(produits[i]);
-  majPanier();
+.product:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow:0 4px 15px rgba(0,0,0,0.2);
 }
-
-// Mise à jour panier
-function majPanier(){
-  const total = panier.reduce((s,p)=>s+p.prix,0);
-  document.getElementById("total").innerText = "Total : " + total + " €";
+.product img { width:100%; border-radius:10px; transition: transform 0.3s; }
+.product img:hover { transform: scale(1.05); }
+.product h3 { margin:10px 0 5px; font-size:1.1em; }
+.product p { font-size:0.9em; color:#333; margin-bottom:10px; }
+.product button {
+  margin-top:5px; padding:8px 15px; background:#ff4081; color:white;
+  border:none; border-radius:6px; cursor:pointer; transition: background 0.3s, transform 0.2s;
 }
-
-// Valider commande
-const btnValider = document.getElementById("valider");
-if(btnValider){
-  btnValider.addEventListener("click", ()=>{
-    const nom = document.getElementById("nom").value;
-    const tel = document.getElementById("telephone").value;
-    const adr = document.getElementById("adresse").value;
-    const total = panier.reduce((s,p)=>s+p.prix,0);
-
-    if(nom && tel && adr && panier.length>0){
-      db.collection("commandes").add({
-        nom: nom,
-        telephone: tel,
-        adresse: adr,
-        total: total,
-        panier: panier,
-        date: new Date()
-      }).then(()=>{
-        alert("Commande envoyée !");
-        panier = [];
-        majPanier();
-      }).catch(err=>{
-        alert("Erreur : " + err.message);
-      });
-    } else {
-      alert("Complétez vos informations et ajoutez des produits.");
-    }
-  });
+.product button:hover {
+  background:#e91e63; transform: scale(1.05);
 }
-
-// Charger commandes (Admin)
-function chargerCommandes(){
-  const commandesDiv = document.getElementById("commandes");
-  db.collection("commandes").orderBy("date","desc").onSnapshot(snap=>{
-    commandesDiv.innerHTML="";
-    snap.forEach(doc=>{
-      const d = doc.data();
-      const div = document.createElement("div");
-      div.className="commande";
-      div.innerHTML = `
-        <p><strong>Nom:</strong> ${d.nom}</p>
-        <p><strong>Téléphone:</strong> ${d.telephone}</p>
-        <p><strong>Adresse:</strong> ${d.adresse}</p>
-        <p><strong>Total:</strong> ${d.total} €</p>
-        <div class="produits">
-          ${d.panier.map(p=>`
-            <div class="produit">
-              <img src="${p.image}">
-              <p>${p.nom}</p>
-              <p>${p.prix} €</p>
-            </div>
-          `).join("")}
-        </div>
-        <button onclick="supprimerCommande('${doc.id}')">🗑 Supprimer</button>
-      `;
-      commandesDiv.appendChild(div);
-    });
-  });
+.cart { flex:1; background:white; padding:20px; border-radius:12px; margin-left:25px;
+  height:max-content; box-shadow:0 3px 12px rgba(0,0,0,0.15);
 }
-
-// Supprimer commande
-function supprimerCommande(id){
-  if(confirm("Supprimer cette commande ?")){
-    db.collection("commandes").doc(id).delete();
-  }
+.cart button {
+  margin-top:8px; padding:10px; width:100%; border:none; border-radius:6px; cursor:pointer;
+  transition: background 0.3s, transform 0.2s;
 }
