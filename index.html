@@ -2,9 +2,11 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RoseShop Boutique</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 </head>
 <body>
   <header>
@@ -12,60 +14,18 @@
   </header>
 
   <main>
-    <section class="products" id="products"></section>
-
-    <aside class="cart">
+    <div class="products" id="products"></div>
+    <div class="cart" id="cart">
       <h2>🛒 Mon Panier</h2>
-      <ul id="cart-list"></ul>
       <p id="total">Total : 0 €</p>
-      <input type="text" id="client-name" placeholder="Nom complet">
-      <input type="text" id="client-phone" placeholder="Numéro de téléphone">
-      <input type="text" id="client-address" placeholder="Adresse">
-      <button id="valider">Valider la commande</button>
-    </aside>
+      <input type="text" id="name" placeholder="Nom complet">
+      <input type="text" id="phone" placeholder="Numéro de téléphone">
+      <input type="text" id="address" placeholder="Adresse">
+      <button onclick="validerCommande()">Valider la commande</button>
+    </div>
   </main>
 
-  <footer>
-    <button id="admin-login">🔑 Espace Admin</button>
-  </footer>
-
-  <!-- Section Admin -->
-  <section class="clients" id="clients-section" style="display:none;">
-    <h2>👥 Liste des Clients</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Téléphone</th>
-          <th>Adresse</th>
-          <th>Produits</th>
-          <th>Total (€)</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody id="clients-list"></tbody>
-    </table>
-  </section>
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
-
-  <script>
-    // ⚠️ غيّر هذه المعلومات من Firebase Console (Project Settings → SDK setup)
-    const firebaseConfig = {
-      apiKey: "TON_API_KEY",
-      authDomain: "TON_PROJECT.firebaseapp.com",
-      projectId: "TON_PROJECT",
-      storageBucket: "TON_PROJECT.appspot.com",
-      messagingSenderId: "TON_SENDER_ID",
-      appId: "TON_APP_ID"
-    };
-
-    // Initialiser Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore(app);
-  </script>
+  <button id="adminBtn" onclick="location.href='admin.html'">🔑 Espace Admin</button>
 
   <script src="script.js"></script>
 </body>
