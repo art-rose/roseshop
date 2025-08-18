@@ -1,84 +1,118 @@
 body {
-  margin: 0;
   font-family: "Cairo", sans-serif;
-  background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to right, #ffdde1, #ee9ca7);
   color: #333;
+  direction: rtl;
 }
 
+/* الهيدر */
 header {
-  text-align: center;
+  background: #6a1b9a;
+  color: #fff;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(8px);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
 }
 
 header h1 {
   margin: 0;
-  font-size: 2.2rem;
-  color: #fff;
 }
 
-/* شبكة المنتجات */
-.products {
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+}
+
+nav ul li {
+  display: inline;
+  margin: 0 10px;
+}
+
+nav ul li a {
+  color: #fff;
+  text-decoration: none;
+}
+
+/* المنتجات */
+#products {
+  padding: 20px;
+  text-align: center;
+}
+
+.products-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
-  padding: 40px;
+  margin-top: 20px;
 }
 
 .product {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
 }
 
 .product:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
 
 .product img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-bottom: 1px solid #ddd;
+  max-width: 100%;
+  border-radius: 10px;
 }
 
 .product h3 {
-  margin: 15px;
-  font-size: 1.4rem;
-  color: #444;
-}
-
-.product p {
-  margin: 0 15px 10px;
-  font-size: 0.95rem;
-  color: #555;
+  margin: 10px 0 5px;
+  color: #6a1b9a;
 }
 
 .price {
   font-weight: bold;
   color: #e91e63;
-  margin: 0 15px 15px;
+  margin: 5px 0;
 }
 
-.product button {
-  display: block;
-  width: calc(100% - 30px);
-  margin: 0 15px 15px;
+/* فورم التواصل */
+#contact {
+  padding: 20px;
+  background: #fff3f8;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 400px;
+  margin: auto;
+}
+
+input, textarea {
   padding: 10px;
-  background: #e91e63;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.3s ease;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-.product button:hover {
-  background: #c2185b;
+button {
+  background: #6a1b9a;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background: #4a0072;
+}
+
+/* الفوتر */
+footer {
+  background: #333;
+  color: white;
+  text-align: center;
+  padding: 10px;
 }
