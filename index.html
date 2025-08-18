@@ -2,58 +2,55 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>متجري - الورود والتغليف</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>متجر أغلفة الورود</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
+  <!-- الهيدر -->
   <header>
-    <h1>🌹 متجر الورود والتغليف 🌹</h1>
+    <h1>🌹 متجر أغلفة الورود</h1>
+    <nav>
+      <ul>
+        <li><a href="#products">المنتجات</a></li>
+        <li><a href="#contact">تواصل معنا</a></li>
+      </ul>
+    </nav>
   </header>
 
-  <div id="products-container" class="products"></div>
+  <!-- المنتجات -->
+  <main>
+    <section id="products">
+      <h2>منتجاتنا</h2>
+      <div id="products-container" class="products-grid">
+        <!-- المنتجات ستُعرض هنا من Strapi -->
+      </div>
+    </section>
 
-  <script>
-    async function fetchProducts() {
-      try {
-        const res = await fetch("http://localhost:1337/api/products?populate=*");
-        const data = await res.json();
+    <!-- تواصل معنا -->
+    <section id="contact">
+      <h2>تواصل معنا</h2>
+      <form>
+        <label for="name">الاسم:</label>
+        <input type="text" id="name" name="name" required>
 
-        const container = document.getElementById("products-container");
-        container.innerHTML = "";
+        <label for="email">البريد الإلكتروني:</label>
+        <input type="email" id="email" name="email" required>
 
-        data.data.forEach(product => {
-          const name = product.name || product.attributes?.name;
-          const price = product.Price || product.attributes?.price;
+        <label for="message">رسالة:</label>
+        <textarea id="message" name="message" required></textarea>
 
-          const description =
-            (product.Description && product.Description[0]?.children[0]?.text) ||
-            product.attributes?.description ||
-            "بدون وصف";
+        <button type="submit">إرسال</button>
+      </form>
+    </section>
+  </main>
 
-          let imgUrl = "https://via.placeholder.com/300x200.png?text=No+Image";
-          if (product.image && product.image[0]?.url) {
-            imgUrl = "http://localhost:1337" + product.image[0].url;
-          } else if (product.attributes?.image?.data) {
-            imgUrl = "http://localhost:1337" + product.attributes.image.data.attributes.url;
-          }
+  <!-- الفوتر -->
+  <footer>
+    <p>حقوق النشر © 2025 متجر أغلفة الورود</p>
+  </footer>
 
-          container.innerHTML += `
-            <div class="product">
-              <img src="${imgUrl}" alt="${name}">
-              <h3>${name}</h3>
-              <p>${description}</p>
-              <p class="price">💲 ${price}</p>
-              <button>أضف إلى السلة</button>
-            </div>
-          `;
-        });
-      } catch (err) {
-        console.error("❌ خطأ في جلب المنتجات:", err);
-      }
-    }
-
-    fetchProducts();
-  </script>
+  <!-- جافاسكربت -->
+  <script src="script.js"></script>
 </body>
 </html>
