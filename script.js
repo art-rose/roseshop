@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:1337/api/products?populate=*";
+const API_URL = "https://roseshop.onrender.com";
 
 async function fetchProducts() {
   try {
@@ -30,5 +30,6 @@ async function fetchProducts() {
     console.error("❌ خطأ في جلب المنتجات:", error);
   }
 }
+
 
 fetchProducts();
