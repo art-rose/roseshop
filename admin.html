@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>لوحة الإدارة - الطلبات</title>
+  <style>
+    body { font-family: Tahoma, sans-serif; direction: rtl; background: #f7f7f7; padding: 20px; }
+    h2 { text-align: center; margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 10px; border: 1px solid #ccc; text-align: center; }
+    th { background: #007bff; color: white; }
+    button { padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; }
+    .btn-delete { background: #dc3545; color: white; }
+    .btn-delete:hover { background: #c82333; }
+    #loginBox { text-align:center; margin-top:50px; }
+    input { padding: 10px; border: 1px solid #ccc; border-radius: 8px; margin-top: 5px; }
+    #logout { margin: 20px; padding: 10px; background: #6c757d; color:white; border:none; border-radius:8px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <div id="loginBox">
+    <h2>🔑 تسجيل الدخول للوحة الإدارة</h2>
+    <input type="password" id="password" placeholder="أدخل كلمة السر">
+    <button onclick="login()">دخول</button>
+    <p id="loginMsg" style="color:red;"></p>
+  </div>
+
+  <div id="adminPanel" style="display:none;">
+    <h2>📋 قائمة الطلبات</h2>
+    <button id="logout" onclick="logout()">خروج</button>
+    <table id="ordersTable">
+      <thead>
+        <tr>
+          <th>الاسم</th>
+          <th>الهاتف</th>
+          <th>المنتجات</th>
+          <th>المجموع</th>
+          <th>التاريخ</th>
+          <th>حذف</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    const ADMIN_PASSWORD = "1234";
+    const API_URL = "https://script.google.com/macros/s/AKfycbz__f1rubbC6ys7mrQydzu6i8ReuswJTbTT_SlJ2DbumvuhdvnHAZ8p1Mj813l1RY6T/exec";
+
+    function login() {
+      const pass = document.getElementById("password").value;
+      if (pass === ADMIN_PASSWORD) {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("adminPanel").style.display = "block";
+        loadOrders();
+      } else {
+        document.getElementById("loginMsg").innerText = "❌ كلمة السر غير صحيحة";
+      }
+    }
+
+    function logout() {
+      document.getElementById("adminPanel").style.display = "none";
+      document.getElementById("loginBox").style.display = "block";
+      document.getElementById("password").value = "";
+    }
+
+    function loadOrders() {
+      fetch(API_URL + "?action=read")
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.querySelector("#ordersTable tbody");
+          tbody.innerHTML = "";
+          data.forEach((row, idx) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${row.name}</td>
+              <td>${row.phone}</td>
+              <td>${row.product}</td>
+              <td>${row.total}</td>
+              <td>${row.date}</td>
+              <td><button class="btn-delete" onclick="deleteOrder(${idx + 2})">حذف</button></td>
+            `;
+            tbody.appendChild(tr);
+          });
+        });
+    }
+
+    function deleteOrder(rowNumber) {
+      if (confirm("هل تريد فعلاً حذف هذا الطلب؟")) {
+        fetch(API_URL + `?action=delete&row=${rowNumber}`)
+          .then(res => res.text())
+          .then(() => {
+            alert("✅ تم حذف الطلب");
+            loadOrders();
+          });
+      }
+    }
+  </script>
+
+</body>
+</html>
