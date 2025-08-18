@@ -4,116 +4,150 @@
   <meta charset="UTF-8">
   <title>متجر أغلفة الورود</title>
   <style>
-    body { font-family: Arial, sans-serif; direction: rtl; background: #f9f9f9; padding: 20px; color: #333; }
-    h2 { text-align: center; }
-    .products { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
-    .product {
-      border: 1px solid #ddd; padding: 15px; text-align: center;
-      background: #fff; border-radius: 10px; width: 220px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
+    body { font-family: Arial, sans-serif; direction: rtl; background: #f9f9f9; padding: 20px; }
+    .product { border: 1px solid #ddd; padding: 15px; margin: 10px; display: inline-block; text-align: center; background: #fff; border-radius: 10px; width: 220px; }
     .product img { max-width: 100%; border-radius: 10px; }
-    .btn { background: #28a745; color: #fff; padding: 8px 12px;
-      border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+    .btn { background: #28a745; color: #fff; padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
     .btn:hover { background: #218838; }
-    .cart-box { max-width: 400px; margin: 20px auto; background:#fff;
-      padding:15px; border-radius:10px; border:1px solid #ddd; }
-    input, button { font-size: 16px; }
-    input[type="text"] { width: 100%; padding: 8px; margin: 5px 0;
-      border-radius: 5px; border: 1px solid #ccc; }
-    .btn-danger { background:#dc3545; }
-    .btn-danger:hover { background:#c82333; }
+    form { margin-top: 20px; padding: 15px; background: #fff; border-radius: 10px; border: 1px solid #ddd; width: 300px; }
+    input { width: 100%; padding: 8px; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; }
   </style>
 </head>
 <body>
 
   <h2>🛍️ متجر أغلفة الورود</h2>
 
-  <div class="products">
-    <div class="product">
-      <img src="black-wrap.jpg" alt="غلاف أسود">
-      <h3>غلاف أسود</h3>
-      <p>السعر: 10 د.ت</p>
-      <button class="btn" onclick="addToCart('غلاف أسود', 10)">إضافة للطلب</button>
-    </div>
-    <div class="product">
-      <img src="white-wrap.jpg" alt="غلاف أبيض">
-      <h3>غلاف أبيض</h3>
-      <p>السعر: 12 د.ت</p>
-      <button class="btn" onclick="addToCart('غلاف أبيض', 12)">إضافة للطلب</button>
-    </div>
-    <div class="product">
-      <img src="blue-wrap.jpg" alt="غلاف أزرق">
-      <h3>غلاف أزرق</h3>
-      <p>السعر: 11 د.ت</p>
-      <button class="btn" onclick="addToCart('غلاف أزرق', 11)">إضافة للطلب</button>
-    </div>
+  <div class="product">
+    <img src="black-wrap.jpg" alt="غلاف أسود">
+    <h3>غلاف أسود</h3>
+    <button class="btn" onclick="addToCart('غلاف أسود')">إضافة للطلب</button>
   </div>
 
-  <div class="cart-box">
-    <h3>🛒 سلة الطلب</h3>
-    <ul id="cartList"></ul>
-    <p><strong>المجموع: <span id="total">0</span> د.ت</strong></p>
-
-   <form id="orderForm">
-  <input type="text" name="name" placeholder="الاسم" required>
-  <input type="text" name="phone" placeholder="الهاتف" required>
-  <input type="hidden" name="cart" id="cartData">
-  <input type="hidden" name="total" id="totalData">
-  <button type="submit">تأكيد الطلب ✅</button>
-</form>
-    <p id="msg"></p>
+  <div class="product">
+    <img src="white-wrap.jpg" alt="غلاف أبيض">
+    <h3>غلاف أبيض</h3>
+    <button class="btn" onclick="addToCart('غلاف أبيض')">إضافة للطلب</button>
   </div>
+
+  <h3>📦 نموذج الطلب</h3>
+  <form id="orderForm">
+    <input type="text" name="name" placeholder="الاسم الكامل" required>
+    <input type="text" name="phone" placeholder="رقم الهاتف" required>
+    <input type="text" id="cart" name="product" readonly>
+    <button type="submit" class="btn">✅ تأكيد الطلب</button>
+  </form>
+
+  <p id="msg"></p>
 
   <script>
-    let cart = [], total = 0;
+    let cart = [];
 
-    function addToCart(product, price) {
-      cart.push({ product, price });
-      total += price;
-      updateCart();
+    function addToCart(product) {
+      cart.push(product);
+      document.getElementById("cart").value = cart.join(", ");
     }
 
-    function updateCart() {
-      const list = document.getElementById("cartList");
-      list.innerHTML = "";
-      cart.forEach(item => {
-        let li = document.createElement("li");
-        li.innerText = `${item.product} - ${item.price} د.ت`;
-        list.appendChild(li);
-      });
-     document.getElementById("cartData").value = JSON.stringify(cart);
-document.getElementById("totalData").value = total;
-    }
-
-    function clearCart() {
-      cart = [];
-      total = 0;
-      updateCart();
-      document.getElementById("msg").innerText = "🗑️ تم إفراغ السلة.";
-    }
-
-    document.getElementById("orderForm").addEventListener("submit", function(e) {
+    const form = document.getElementById("orderForm");
+    form.addEventListener("submit", function(e) {
       e.preventDefault();
-      fetch("https://script.google.com/macros/s/AKfycbw7XMioPNhAJxYI2ZFpQRUVOOabHQUIUpsm9aivcJQwVSPfT8_OgaHSrP5Id85CuepHkA/exec", {
+
+      fetch("https://<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>متجر أغلفة الورود</title>
+  <style>
+    body { font-family: Arial, sans-serif; direction: rtl; background: #f9f9f9; padding: 20px; }
+    .product { border: 1px solid #ddd; padding: 15px; margin: 10px; display: inline-block; text-align: center; background: #fff; border-radius: 10px; width: 220px; }
+    .product img { max-width: 100%; border-radius: 10px; }
+    .btn { background: #28a745; color: #fff; padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+    .btn:hover { background: #218838; }
+    form { margin-top: 20px; padding: 15px; background: #fff; border-radius: 10px; border: 1px solid #ddd; width: 300px; }
+    input { width: 100%; padding: 8px; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+
+  <h2>🛍️ متجر أغلفة الورود</h2>
+
+  <div class="product">
+    <img src="black-wrap.jpg" alt="غلاف أسود">
+    <h3>غلاف أسود</h3>
+    <button class="btn" onclick="addToCart('غلاف أسود')">إضافة للطلب</button>
+  </div>
+
+  <div class="product">
+    <img src="white-wrap.jpg" alt="غلاف أبيض">
+    <h3>غلاف أبيض</h3>
+    <button class="btn" onclick="addToCart('غلاف أبيض')">إضافة للطلب</button>
+  </div>
+
+  <h3>📦 نموذج الطلب</h3>
+  <form id="orderForm">
+    <input type="text" name="name" placeholder="الاسم الكامل" required>
+    <input type="text" name="phone" placeholder="رقم الهاتف" required>
+    <input type="text" id="cart" name="product" readonly>
+    <button type="submit" class="btn">✅ تأكيد الطلب</button>
+  </form>
+
+  <p id="msg"></p>
+
+  <script>
+    let cart = [];
+
+    function addToCart(product) {
+      cart.push(product);
+      document.getElementById("cart").value = cart.join(", ");
+    }
+
+    const form = document.getElementById("orderForm");
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      fetch("https://script.google.com/macros/s/AKfycbz__f1rubbC6ys7mrQydzu6i8ReuswJTbTT_SlJ2DbumvuhdvnHAZ8p1Mj813l1RY6T/exec", {
         method: "POST",
-        body: new FormData(this)
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name.value,
+          phone: form.phone.value,
+          product: form.product.value,
+          total: "—"
+        })
       })
-      .then(res => res.text())
+      .then(response => response.text())
       .then(data => {
         document.getElementById("msg").innerText = "✅ تم إرسال الطلب بنجاح!";
-        this.reset();
-        clearCart();
+        form.reset();
+        cart = [];
       })
-      .catch(err => {
-        document.getElementById("msg").innerText = "❌ خطأ في الإرسال.";
+      .catch(error => {
+        document.getElementById("msg").innerText = "❌ خطأ، أعد المحاولة.";
       });
     });
   </script>
 
 </body>
+</html>", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name.value,
+          phone: form.phone.value,
+          product: form.product.value,
+          total: "—"
+        })
+      })
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("msg").innerText = "✅ تم إرسال الطلب بنجاح!";
+        form.reset();
+        cart = [];
+      })
+      .catch(error => {
+        document.getElementById("msg").innerText = "❌ خطأ، أعد المحاولة.";
+      });
+    });
+  </script>
 
+</body>
 </html>
-
-
-
