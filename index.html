@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>متجر أغلفة الورود</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>متجر أغلفة الورود</h1>
+    <nav>
+      <ul>
+        <li><a href="#products">المنتجات</a></li>
+        <li><a href="#contact">تواصل معنا</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- المنتجات -->
+    <section id="products">
+      <h2>المنتجات</h2>
+      <div id="products-container">
+        <!-- هنا رح تنعرض المنتجات من Strapi -->
+      </div>
+    </section>
+
+    <!-- تواصل معنا -->
+    <section id="contact">
+      <h2>تواصل معنا</h2>
+      <form>
+        <label for="name">الاسم:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">البريد الإلكتروني:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="message">رسالة:</label>
+        <textarea id="message" name="message" required></textarea>
+
+        <button type="submit">إرسال</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>حقوق النشر &copy; 2023 متجر أغلفة الورود. جميع الحقوق محفوظة.</p>
+  </footer>
+
+  <!-- 🔹 JavaScript -->
+  <script>
+    async function fetchProducts() {
+      try {
+        // غير الرابط إذا استعملت استضافة أخرى
+        const res = await fetch("http://localhost:1337/api/products?populate=*");
+        const data = await res.json();
+
+        const container = document.getElementById("products-container");
+        container.innerHTML = "";
+
+        data.data.forEach(product => {
+          const name = product.attributes.name;
+          const description = product.attributes.description;
+          const price = product.attributes.price;
+          const imgUrl = product.attributes.image?.data
+            ? "http://localhost:1337" + product.attributes.image.data.attributes.url
+            : "placeholder.jpg";
+
+          container.innerHTML += `
+            <div class="product">
+              <img src="${imgUrl}" alt="${name}">
+              <h3>${name}</h3>
+              <p>${description}</p>
+              <p class="price">سعر: ${price}$</p>
+              <button>أضف إلى السلة</button>
+            </div>
+          `;
+        });
+      } catch (err) {
+        console.error("❌ خطأ في جلب المنتجات:", err);
+      }
+    }
+
+    fetchProducts();
+  </script>
+</body>
+</html>
