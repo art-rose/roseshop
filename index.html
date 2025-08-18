@@ -55,14 +55,13 @@
     <ul id="cartList"></ul>
     <p><strong>المجموع: <span id="total">0</span> د.ت</strong></p>
 
-    <form id="orderForm">
-      <input type="text" name="name" placeholder="الاسم الكامل" required>
-      <input type="text" name="phone" placeholder="رقم الهاتف" required>
-      <input type="hidden" id="cartInput" name="product">
-      <input type="hidden" id="totalInput" name="total">
-      <button type="submit" class="btn">✅ تأكيد الطلب</button>
-      <button type="button" class="btn btn-danger" onclick="clearCart()">🗑️ إفراغ السلة</button>
-    </form>
+   <form id="orderForm">
+  <input type="text" name="name" placeholder="الاسم" required>
+  <input type="text" name="phone" placeholder="الهاتف" required>
+  <input type="hidden" name="cart" id="cartData">
+  <input type="hidden" name="total" id="totalData">
+  <button type="submit">تأكيد الطلب ✅</button>
+</form>
     <p id="msg"></p>
   </div>
 
@@ -83,9 +82,8 @@
         li.innerText = `${item.product} - ${item.price} د.ت`;
         list.appendChild(li);
       });
-      document.getElementById("total").innerText = total;
-      document.getElementById("cartInput").value = cart.map(i => `${i.product} (${i.price} د.ت)`).join(", ");
-      document.getElementById("totalInput").value = total;
+     document.getElementById("cartData").value = JSON.stringify(cart);
+document.getElementById("totalData").value = total;
     }
 
     function clearCart() {
@@ -116,4 +114,5 @@
 </body>
 
 </html>
+
 
