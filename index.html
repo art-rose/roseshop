@@ -2,15 +2,93 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>متجر أغلفة الورود</title>
   <style>
-    body { font-family: Arial, sans-serif; direction: rtl; background: #f9f9f9; padding: 20px; }
-    .product { border: 1px solid #ddd; padding: 15px; margin: 10px; display: inline-block; text-align: center; background: #fff; border-radius: 10px; width: 220px; }
-    .product img { max-width: 100%; border-radius: 10px; }
-    .btn { background: #28a745; color: #fff; padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
-    .btn:hover { background: #218838; }
-    form { margin-top: 20px; padding: 15px; background: #fff; border-radius: 10px; border: 1px solid #ddd; width: 300px; }
-    input { width: 100%; padding: 8px; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; }
+    body { 
+      font-family: Arial, sans-serif; 
+      direction: rtl; 
+      background: #f9f9f9; 
+      padding: 20px;
+      margin: 0;
+    }
+
+    h2, h3 { 
+      text-align: center; 
+      margin-bottom: 20px; 
+    }
+
+    .product { 
+      border: 1px solid #ddd; 
+      padding: 15px; 
+      margin: 10px; 
+      display: inline-block; 
+      text-align: center; 
+      background: #fff; 
+      border-radius: 10px; 
+      width: 220px; 
+      transition: transform 0.3s;
+    }
+
+    .product img { 
+      max-width: 100%; 
+      border-radius: 10px; 
+      margin-bottom: 10px;
+    }
+
+    .product:hover { 
+      transform: scale(1.05); 
+    }
+
+    .btn { 
+      background: #28a745; 
+      color: #fff; 
+      padding: 10px 15px; 
+      border: none; 
+      border-radius: 6px; 
+      cursor: pointer; 
+      margin-top: 10px; 
+      font-size: 16px;
+    }
+
+    .btn:hover { 
+      background: #218838; 
+    }
+
+    form { 
+      margin-top: 20px; 
+      padding: 20px; 
+      background: #fff; 
+      border-radius: 10px; 
+      border: 1px solid #ddd; 
+      width: 100%;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    input { 
+      width: 100%; 
+      padding: 12px; 
+      margin: 8px 0; 
+      border-radius: 8px; 
+      border: 1px solid #ccc; 
+      font-size: 16px; 
+    }
+
+    #msg { 
+      text-align: center; 
+      font-weight: bold; 
+      font-size: 18px;
+    }
+
+    #msg.success { 
+      color: green; 
+    }
+
+    #msg.error { 
+      color: red; 
+    }
   </style>
 </head>
 <body>
@@ -31,9 +109,9 @@
 
   <h3>📦 نموذج الطلب</h3>
   <form id="orderForm">
-    <input type="text" name="name" placeholder="الاسم الكامل" required>
-    <input type="text" name="phone" placeholder="رقم الهاتف" required>
-    <input type="text" id="cart" name="product" readonly>
+    <input type="text" name="name" id="name" placeholder="الاسم الكامل" required>
+    <input type="text" name="phone" id="phone" placeholder="رقم الهاتف" required>
+    <input type="text" id="cart" name="product" placeholder="المنتجات" readonly>
     <button type="submit" class="btn">✅ تأكيد الطلب</button>
   </form>
 
@@ -43,21 +121,26 @@
     let cart = [];
     let total = 0;
 
+    // Ajout de produits au panier
     function addToCart(product, price) {
       cart.push(product);
       total += price;
       document.getElementById("cart").value = cart.join(", ");
     }
 
+    // Gestion de l'envoi du formulaire
     const form = document.getElementById("orderForm");
     form.addEventListener("submit", function(e) {
       e.preventDefault();
 
-      if (form.name.value === "" || form.phone.value === "") {
+      // Validation des champs du formulaire
+      if (!form.name.value || !form.phone.value) {
         document.getElementById("msg").innerText = "❌ يرجى ملء جميع الحقول.";
+        document.getElementById("msg").className = "error";
         return;
       }
 
+      // Envoi des données au Google Apps Script via fetch
       fetch("https://script.google.com/macros/s/AKfycbw6V5HDgtZ0vUYrOAbC1pn1qEmKtcFkeWdSfFmMQRmfA0BnDOydvUSOac-Ex1L95Ne0bw/exec", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -71,12 +154,14 @@
       .then(response => response.text())
       .then(data => {
         document.getElementById("msg").innerText = "✅ تم إرسال الطلب بنجاح!";
+        document.getElementById("msg").className = "success";
         form.reset();
         cart = [];
         total = 0;
       })
       .catch(error => {
         document.getElementById("msg").innerText = "❌ خطأ، أعد المحاولة.";
+        document.getElementById("msg").className = "error";
       });
     });
   </script>
