@@ -1,170 +1,167 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>متجر أغلفة الورود</title>
+  <title>RoseShop – Boutique</title>
   <style>
-    body { 
-      font-family: Arial, sans-serif; 
-      direction: rtl; 
-      background: #f9f9f9; 
-      padding: 20px;
-      margin: 0;
-    }
-
-    h2, h3 { 
-      text-align: center; 
-      margin-bottom: 20px; 
-    }
-
-    .product { 
-      border: 1px solid #ddd; 
-      padding: 15px; 
-      margin: 10px; 
-      display: inline-block; 
-      text-align: center; 
-      background: #fff; 
-      border-radius: 10px; 
-      width: 220px; 
-      transition: transform 0.3s;
-    }
-
-    .product img { 
-      max-width: 100%; 
-      border-radius: 10px; 
-      margin-bottom: 10px;
-    }
-
-    .product:hover { 
-      transform: scale(1.05); 
-    }
-
-    .btn { 
-      background: #28a745; 
-      color: #fff; 
-      padding: 10px 15px; 
-      border: none; 
-      border-radius: 6px; 
-      cursor: pointer; 
-      margin-top: 10px; 
-      font-size: 16px;
-    }
-
-    .btn:hover { 
-      background: #218838; 
-    }
-
-    form { 
-      margin-top: 20px; 
-      padding: 20px; 
-      background: #fff; 
-      border-radius: 10px; 
-      border: 1px solid #ddd; 
-      width: 100%;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    input { 
-      width: 100%; 
-      padding: 12px; 
-      margin: 8px 0; 
-      border-radius: 8px; 
-      border: 1px solid #ccc; 
-      font-size: 16px; 
-    }
-
-    #msg { 
-      text-align: center; 
-      font-weight: bold; 
-      font-size: 18px;
-    }
-
-    #msg.success { 
-      color: green; 
-    }
-
-    #msg.error { 
-      color: red; 
-    }
+    body{font-family:Arial,sans-serif;background:#f9f9f9;margin:0}
+    header{background:#e91e63;color:#fff;padding:10px;display:flex;justify-content:space-between;align-items:center}
+    header h1{margin:0}
+    header button{background:#fff;color:#e91e63;border:none;padding:6px 12px;border-radius:6px;cursor:pointer}
+    .filters{display:flex;gap:10px;align-items:center;padding:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+    .products{display:flex;gap:15px;flex-wrap:wrap;padding:20px}
+    .card{background:#fff;padding:10px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.1);width:200px}
+    .card button{background:#e91e63;color:#fff;border:none;padding:6px;margin-top:6px;border-radius:6px;cursor:pointer;width:100%}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center}
+    .modal-content{background:#fff;padding:20px;border-radius:10px;max-width:400px;width:90%}
+    .cart-item{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #eee}
+    input,select,button{padding:6px}
   </style>
 </head>
 <body>
+  <header>
+    <h1>RoseShop</h1>
+    <button id="openCart">🛒 Panier (<span id="cartCount">0</span>)</button>
+  </header>
 
-  <h2>🛍️ متجر أغلفة الورود</h2>
-
-  <div class="product">
-    <img src="black-wrap.jpg" alt="غلاف أسود">
-    <h3>غلاف أسود</h3>
-    <button class="btn" onclick="addToCart('غلاف أسود', 30)">إضافة للطلب</button>
+  <!-- 🔍 بحث و فلتر -->
+  <div class="filters">
+    <input type="text" id="searchInput" placeholder="🔍 Rechercher un produit...">
+    <label>Filtrer par prix:
+      <select id="priceFilter">
+        <option value="all">Tous</option>
+        <option value="low">Moins de 15 TND</option>
+        <option value="mid">15 - 20 TND</option>
+        <option value="high">Plus de 20 TND</option>
+      </select>
+    </label>
   </div>
 
-  <div class="product">
-    <img src="white-wrap.jpg" alt="غلاف أبيض">
-    <h3>غلاف أبيض</h3>
-    <button class="btn" onclick="addToCart('غلاف أبيض', 25)">إضافة للطلب</button>
+  <main class="products" id="products"></main>
+
+  <!-- Panier -->
+  <div class="modal" id="cartModal">
+    <div class="modal-content">
+      <h2>🛒 Votre Panier</h2>
+      <div id="cartItems"></div>
+      <p><strong>Total: <span id="cartTotal">0</span> TND</strong></p>
+      
+      <!-- معلومات إضافية -->
+      <input type="text" id="customerName" placeholder="✍️ Votre nom">
+      <input type="text" id="customerPhone" placeholder="📞 Votre téléphone">
+      <button id="validateOrder">✅ Valider la commande</button>
+      <button onclick="cartModal.style.display='none'">Fermer</button>
+    </div>
   </div>
-
-  <h3>📦 نموذج الطلب</h3>
-  <form id="orderForm">
-    <input type="text" name="name" id="name" placeholder="الاسم الكامل" required>
-    <input type="text" name="phone" id="phone" placeholder="رقم الهاتف" required>
-    <input type="text" id="cart" name="product" placeholder="المنتجات" readonly>
-    <button type="submit" class="btn">✅ تأكيد الطلب</button>
-  </form>
-
-  <p id="msg"></p>
 
   <script>
-    let cart = [];
-    let total = 0;
+    const productsList=[
+      {name:"Papier de soie",price:12.9},
+      {name:"Film transparent",price:18.5},
+      {name:"Sachet cadeau",price:22},
+      {name:"Papier kraft coloré",price:15},
+      {name:"Ruban satin",price:8.5},
+      {name:"Boîte luxe",price:25}
+    ];
 
-    // Ajout de produits au panier
-    function addToCart(product, price) {
-      cart.push(product);
-      total += price;
-      document.getElementById("cart").value = cart.join(", ");
+    const productsDiv=document.getElementById("products");
+    const cartModal=document.getElementById("cartModal");
+    const cartItemsDiv=document.getElementById("cartItems");
+    const cartCount=document.getElementById("cartCount");
+    const cartTotal=document.getElementById("cartTotal");
+    const openCart=document.getElementById("openCart");
+    const validateBtn=document.getElementById("validateOrder");
+    const customerName=document.getElementById("customerName");
+    const customerPhone=document.getElementById("customerPhone");
+    const searchInput=document.getElementById("searchInput");
+    const priceFilter=document.getElementById("priceFilter");
+
+    let cart=[];
+
+    // 🔄 afficher produits filtrés
+    function renderProducts(){
+      const search=searchInput.value.toLowerCase();
+      const filter=priceFilter.value;
+      productsDiv.innerHTML="";
+
+      productsList
+        .filter(p=>{
+          // recherche par nom
+          if(!p.name.toLowerCase().includes(search)) return false;
+
+          // filtre par prix
+          if(filter==="low" && p.price>=15) return false;
+          if(filter==="mid" && (p.price<15 || p.price>20)) return false;
+          if(filter==="high" && p.price<=20) return false;
+
+          return true;
+        })
+        .forEach(p=>{
+          const card=document.createElement("div");
+          card.className="card";
+          card.innerHTML=`
+            <h3>${p.name}</h3>
+            <p>${p.price} TND</p>
+            <label>Quantité: <input type='number' value='1' min='1' style='width:60px'></label>
+            <button>Ajouter au panier</button>
+          `;
+          
+          const qtyInput=card.querySelector("input");
+          const addBtn=card.querySelector("button");
+
+          addBtn.onclick=()=>{
+            const qty=parseInt(qtyInput.value)||1;
+            cart.push({...p,qty});
+            updateCart();
+          };
+
+          productsDiv.appendChild(card);
+        });
     }
 
-    // Gestion de l'envoi du formulaire
-    const form = document.getElementById("orderForm");
-    form.addEventListener("submit", function(e) {
-      e.preventDefault();
-
-      // Validation des champs du formulaire
-      if (!form.name.value || !form.phone.value) {
-        document.getElementById("msg").innerText = "❌ يرجى ملء جميع الحقول.";
-        document.getElementById("msg").className = "error";
-        return;
-      }
-
-      // Envoi des données au Google Apps Script via fetch
-      fetch("https://script.google.com/macros/s/AKfycbw6V5HDgtZ0vUYrOAbC1pn1qEmKtcFkeWdSfFmMQRmfA0BnDOydvUSOac-Ex1L95Ne0bw/exec", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name.value,
-          phone: form.phone.value,
-          product: form.product.value,
-          total: total
-        })
-      })
-      .then(response => response.text())
-      .then(data => {
-        document.getElementById("msg").innerText = "✅ تم إرسال الطلب بنجاح!";
-        document.getElementById("msg").className = "success";
-        form.reset();
-        cart = [];
-        total = 0;
-      })
-      .catch(error => {
-        document.getElementById("msg").innerText = "❌ خطأ، أعد المحاولة.";
-        document.getElementById("msg").className = "error";
+    function updateCart(){
+      cartItemsDiv.innerHTML="";
+      let total=0;
+      cart.forEach(item=>{
+        total+=item.price*item.qty;
+        const div=document.createElement("div");
+        div.className="cart-item";
+        div.textContent=`${item.name} (x${item.qty}) - ${(item.price*item.qty).toFixed(3)} TND`;
+        cartItemsDiv.appendChild(div);
       });
-    });
-  </script>
+      cartCount.textContent=cart.length;
+      cartTotal.textContent=total.toFixed(3);
+    }
 
+    openCart.onclick=()=>cartModal.style.display="flex";
+
+    // valider commande
+    validateBtn.onclick=()=>{
+      if(cart.length===0){alert("Panier vide !");return;}
+      if(customerName.value.trim()===""){alert("Veuillez entrer votre nom");return;}
+      if(customerPhone.value.trim()===""){alert("Veuillez entrer votre téléphone");return;}
+
+      const orders=JSON.parse(localStorage.getItem("orders")||"[]");
+      const newOrder={
+        id:Date.now(),
+        client:customerName.value,
+        phone:customerPhone.value,
+        items:cart,
+        total:parseFloat(cartTotal.textContent),
+        date:new Date().toLocaleString()
+      };
+      orders.push(newOrder);
+      localStorage.setItem("orders",JSON.stringify(orders));
+      alert("✅ Commande envoyée !");
+      cart=[];updateCart();cartModal.style.display="none";customerName.value="";customerPhone.value="";
+    };
+
+    // 🎯 appliquer recherche/filtre
+    searchInput.oninput=renderProducts;
+    priceFilter.onchange=renderProducts;
+
+    // premier rendu
+    renderProducts();
+  </script>
 </body>
 </html>
