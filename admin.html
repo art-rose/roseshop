@@ -1,93 +1,144 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>لوحة الإدارة - الطلبات</title>
+  <title>RoseShop – Admin</title>
   <style>
-    body { font-family: Tahoma, sans-serif; direction: rtl; background: #f7f7f7; padding: 20px; }
-    h2 { text-align: center; margin-bottom: 20px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { padding: 10px; border: 1px solid #ccc; text-align: center; }
-    th { background: #007bff; color: white; }
-    button { padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; }
-    .btn-delete { background: #dc3545; color: white; }
-    .btn-delete:hover { background: #c82333; }
-    #loginBox { text-align:center; margin-top:50px; }
-    input { padding: 10px; border: 1px solid #ccc; border-radius: 8px; margin-top: 5px; }
-    #logout { margin: 20px; padding: 10px; background: #6c757d; color:white; border:none; border-radius:8px; cursor: pointer; }
+    body{font-family:Arial,sans-serif;background:#f4f4f4;padding:20px}
+    h1{color:#e91e63}
+    table{width:100%;border-collapse:collapse;background:#fff;margin-top:10px}
+    th,td{border:1px solid #ddd;padding:8px;text-align:center}
+    th{background:#e91e63;color:#fff}
+    button{padding:6px 10px;border:none;border-radius:6px;cursor:pointer;margin:4px}
+    .deleteBtn{background:#e74c3c;color:#fff}
+    .logoutBtn{background:#333;color:#fff;float:right}
+    .exportBtn{background:#27ae60;color:#fff}
+    .pdfBtn{background:#2980b9;color:#fff}
   </style>
 </head>
 <body>
+  <h1>📋 Administration RoseShop</h1>
+  <button class="logoutBtn" onclick="logout()">🚪 Déconnexion</button>
+  <button class="exportBtn" onclick="exportExcel()">📥 Export Excel</button>
+  <button class="pdfBtn" onclick="exportPDF()">📄 Export PDF</button>
 
-  <div id="loginBox">
-    <h2>🔑 تسجيل الدخول للوحة الإدارة</h2>
-    <input type="password" id="password" placeholder="أدخل كلمة السر">
-    <button onclick="login()">دخول</button>
-    <p id="loginMsg" style="color:red;"></p>
-  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Client</th>
+        <th>Téléphone</th>
+        <th>Produits</th>
+        <th>Total</th>
+        <th>Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="ordersTable"></tbody>
+  </table>
 
-  <div id="adminPanel" style="display:none;">
-    <h2>📋 قائمة الطلبات</h2>
-    <button id="logout" onclick="logout()">خروج</button>
-    <table id="ordersTable">
-      <thead>
-        <tr>
-          <th>الاسم</th>
-          <th>الهاتف</th>
-          <th>المنتجات</th>
-          <th>المجموع</th>
-          <th>التاريخ</th>
-          <th>حذف</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+  <!-- مكتبات التصدير -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <script>
-    const ADMIN_PASSWORD = "1234";
-    const API_URL = "https://script.google.com/macros/s/AKfycbz__f1rubbC6ys7mrQydzu6i8ReuswJTbTT_SlJ2DbumvuhdvnHAZ8p1Mj813l1RY6T/exec";
-
-    function login() {
-      const pass = document.getElementById("password").value;
-      if (pass === ADMIN_PASSWORD) {
-        document.getElementById("loginBox").style.display = "none";
-        document.getElementById("adminPanel").style.display = "block";
-        loadOrders();
+    // التحقق من كلمة السر
+    const correctPassword="mahdinourhene2025"; 
+    if(!sessionStorage.getItem("adminLogged")){
+      const pwd=prompt("Entrez le mot de passe admin:");
+      if(pwd!==correctPassword){
+        alert("❌ Mot de passe incorrect !");
+        location.href="client.html"; 
       } else {
-        document.getElementById("loginMsg").innerText = "❌ كلمة السر غير صحيحة";
+        sessionStorage.setItem("adminLogged",true);
       }
     }
 
-    function logout() {
-      document.getElementById("adminPanel").style.display = "none";
-      document.getElementById("loginBox").style.display = "block";
-      document.getElementById("password").value = "";
+    const ordersTable=document.getElementById("ordersTable");
+
+    function loadOrders(){
+      const orders=JSON.parse(localStorage.getItem("orders")||"[]");
+      ordersTable.innerHTML="";
+
+      if(orders.length===0){
+        ordersTable.innerHTML="<tr><td colspan='6'>Aucune commande</td></tr>";
+        return;
+      }
+
+      orders.forEach(order=>{
+        const tr=document.createElement("tr");
+        tr.innerHTML=`
+          <td>${order.client}</td>
+          <td>${order.phone}</td>
+          <td>
+            ${order.items.map(it=>`${it.name} (x${it.qty})`).join("<br>")}
+          </td>
+          <td>${order.total.toFixed(3)} TND</td>
+          <td>${order.date}</td>
+          <td><button class="deleteBtn" onclick="deleteOrder(${order.id})">❌ Supprimer</button></td>
+        `;
+        ordersTable.appendChild(tr);
+      });
     }
 
-    function loadOrders() {
-      fetch(API_URL + "?action=read")
-        .then(res => res.json())
-        .then(data => {
-          const tbody = document.querySelector("#ordersTable tbody");
-          tbody.innerHTML = "";
-          data.forEach((row, idx) => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-              <td>${row.name}</td>
-              <td>${row.phone}</td>
-              <td>${row.product}</td>
-              <td>${row.total}</td>
-              <td>${row.date}</td>
-              <td><button class="btn-delete" onclick="deleteOrder(${idx + 2})">حذف</button></td>
-            `;
-            tbody.appendChild(tr);
-          });
-        });
+    function deleteOrder(id){
+      let orders=JSON.parse(localStorage.getItem("orders")||"[]");
+      orders=orders.filter(o=>o.id!==id);
+      localStorage.setItem("orders",JSON.stringify(orders));
+      loadOrders();
     }
 
-    function deleteOrder(rowNumber) {
-      if (confirm("هل تريد فعلاً حذف هذا الطلب؟")) {
-        fetch(API_URL + `?action=delete&row=${rowNumber}`)
-          .then(res => res.text())
-          .then(() =>
+    function logout(){
+      sessionStorage.removeItem("adminLogged");
+      location.href="client.html";
+    }
+
+    // 📥 Export Excel
+    function exportExcel(){
+      const orders=JSON.parse(localStorage.getItem("orders")||"[]");
+      if(orders.length===0){alert("❌ Pas de commandes à exporter");return;}
+
+      const data=orders.map(o=>({
+        Client:o.client,
+        Téléphone:o.phone,
+        Produits:o.items.map(it=>`${it.name} (x${it.qty})`).join(", "),
+        Total:o.total+" TND",
+        Date:o.date
+      }));
+
+      const ws=XLSX.utils.json_to_sheet(data);
+      const wb=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb,ws,"Commandes");
+      XLSX.writeFile(wb,"commandes.xlsx");
+    }
+
+    // 📄 Export PDF
+    async function exportPDF(){
+      const { jsPDF } = window.jspdf;
+      const doc=new jsPDF();
+
+      const orders=JSON.parse(localStorage.getItem("orders")||"[]");
+      if(orders.length===0){alert("❌ Pas de commandes à exporter");return;}
+
+      doc.setFontSize(14);
+      doc.text("Liste des commandes - RoseShop",10,10);
+
+      let y=20;
+      orders.forEach((o,i)=>{
+        doc.setFontSize(12);
+        doc.text(`Client: ${o.client}`,10,y);
+        doc.text(`Tel: ${o.phone}`,80,y);
+        doc.text(`Total: ${o.total} TND`,140,y);
+        y+=6;
+        doc.setFontSize(10);
+        doc.text(`Produits: ${o.items.map(it=>`${it.name} (x${it.qty})`).join(", ")}`,10,y);
+        y+=10;
+        if(y>270){doc.addPage();y=20;}
+      });
+
+      doc.save("commandes.pdf");
+    }
+
+    loadOrders();
+  </script>
+</body>
+</html>
