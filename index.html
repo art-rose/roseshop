@@ -54,114 +54,109 @@
     </div>
   </div>
 
-  <script>
-    const productsList=[
-      {name:"Papier de soie",price:12.9},
-      {name:"Film transparent",price:18.5},
-      {name:"Sachet cadeau",price:22},
-      {name:"Papier kraft coloré",price:15},
-      {name:"Ruban satin",price:8.5},
-      {name:"Boîte luxe",price:25}
-    ];
+ <script>
+  const productsList=[
+    {name:"Papier de soie",price:12.9,image:"images/papier-soie.jpg"},
+    {name:"Film transparent",price:18.5,image:"images/film-transparent.jpg"},
+    {name:"Sachet cadeau",price:22,image:"images/sachet-cadeau.jpg"},
+    {name:"Papier kraft coloré",price:15,image:"images/papier-kraft.jpg"},
+    {name:"Ruban satin",price:8.5,image:"images/ruban-satin.jpg"},
+    {name:"Boîte luxe",price:25,image:"images/boite-luxe.jpg"}
+  ];
 
-    const productsDiv=document.getElementById("products");
-    const cartModal=document.getElementById("cartModal");
-    const cartItemsDiv=document.getElementById("cartItems");
-    const cartCount=document.getElementById("cartCount");
-    const cartTotal=document.getElementById("cartTotal");
-    const openCart=document.getElementById("openCart");
-    const validateBtn=document.getElementById("validateOrder");
-    const customerName=document.getElementById("customerName");
-    const customerPhone=document.getElementById("customerPhone");
-    const searchInput=document.getElementById("searchInput");
-    const priceFilter=document.getElementById("priceFilter");
+  const productsDiv=document.getElementById("products");
+  const cartModal=document.getElementById("cartModal");
+  const cartItemsDiv=document.getElementById("cartItems");
+  const cartCount=document.getElementById("cartCount");
+  const cartTotal=document.getElementById("cartTotal");
+  const openCart=document.getElementById("openCart");
+  const validateBtn=document.getElementById("validateOrder");
+  const customerName=document.getElementById("customerName");
+  const customerPhone=document.getElementById("customerPhone");
+  const searchInput=document.getElementById("searchInput");
+  const priceFilter=document.getElementById("priceFilter");
 
-    let cart=[];
+  let cart=[];
 
-    // 🔄 afficher produits filtrés
-    function renderProducts(){
-      const search=searchInput.value.toLowerCase();
-      const filter=priceFilter.value;
-      productsDiv.innerHTML="";
+  // 🔄 afficher produits filtrés
+  function renderProducts(){
+    const search=searchInput.value.toLowerCase();
+    const filter=priceFilter.value;
+    productsDiv.innerHTML="";
 
-      productsList
-        .filter(p=>{
-          // recherche par nom
-          if(!p.name.toLowerCase().includes(search)) return false;
+    productsList
+      .filter(p=>{
+        if(!p.name.toLowerCase().includes(search)) return false;
+        if(filter==="low" && p.price>=15) return false;
+        if(filter==="mid" && (p.price<15 || p.price>20)) return false;
+        if(filter==="high" && p.price<=20) return false;
+        return true;
+      })
+      .forEach(p=>{
+        const card=document.createElement("div");
+        card.className="card";
+        card.innerHTML=`
+          <img src="${p.image}" alt="${p.name}" style="width:100%;border-radius:6px;margin-bottom:8px">
+          <h3>${p.name}</h3>
+          <p>${p.price} TND</p>
+          <label>Quantité: <input type='number' value='1' min='1' style='width:60px'></label>
+          <button>Ajouter au panier</button>
+        `;
+       
+        const qtyInput=card.querySelector("input");
+        const addBtn=card.querySelector("button");
 
-          // filtre par prix
-          if(filter==="low" && p.price>=15) return false;
-          if(filter==="mid" && (p.price<15 || p.price>20)) return false;
-          if(filter==="high" && p.price<=20) return false;
+        addBtn.onclick=()=>{
+          const qty=parseInt(qtyInput.value)||1;
+          cart.push({...p,qty});
+          updateCart();
+        };
 
-          return true;
-        })
-        .forEach(p=>{
-          const card=document.createElement("div");
-          card.className="card";
-          card.innerHTML=`
-            <h3>${p.name}</h3>
-            <p>${p.price} TND</p>
-            <label>Quantité: <input type='number' value='1' min='1' style='width:60px'></label>
-            <button>Ajouter au panier</button>
-          `;
-          
-          const qtyInput=card.querySelector("input");
-          const addBtn=card.querySelector("button");
-
-          addBtn.onclick=()=>{
-            const qty=parseInt(qtyInput.value)||1;
-            cart.push({...p,qty});
-            updateCart();
-          };
-
-          productsDiv.appendChild(card);
-        });
-    }
-
-    function updateCart(){
-      cartItemsDiv.innerHTML="";
-      let total=0;
-      cart.forEach(item=>{
-        total+=item.price*item.qty;
-        const div=document.createElement("div");
-        div.className="cart-item";
-        div.textContent=`${item.name} (x${item.qty}) - ${(item.price*item.qty).toFixed(3)} TND`;
-        cartItemsDiv.appendChild(div);
+        productsDiv.appendChild(card);
       });
-      cartCount.textContent=cart.length;
-      cartTotal.textContent=total.toFixed(3);
-    }
+  }
 
-    openCart.onclick=()=>cartModal.style.display="flex";
+  function updateCart(){
+    cartItemsDiv.innerHTML="";
+    let total=0;
+    cart.forEach(item=>{
+      total+=item.price*item.qty;
+      const div=document.createElement("div");
+      div.className="cart-item";
+      div.textContent=`${item.name} (x${item.qty}) - ${(item.price*item.qty).toFixed(3)} TND`;
+      cartItemsDiv.appendChild(div);
+    });
+    cartCount.textContent=cart.length;
+    cartTotal.textContent=total.toFixed(3);
+  }
 
-    // valider commande
-    validateBtn.onclick=()=>{
-      if(cart.length===0){alert("Panier vide !");return;}
-      if(customerName.value.trim()===""){alert("Veuillez entrer votre nom");return;}
-      if(customerPhone.value.trim()===""){alert("Veuillez entrer votre téléphone");return;}
+  openCart.onclick=()=>cartModal.style.display="flex";
 
-      const orders=JSON.parse(localStorage.getItem("orders")||"[]");
-      const newOrder={
-        id:Date.now(),
-        client:customerName.value,
-        phone:customerPhone.value,
-        items:cart,
-        total:parseFloat(cartTotal.textContent),
-        date:new Date().toLocaleString()
-      };
-      orders.push(newOrder);
-      localStorage.setItem("orders",JSON.stringify(orders));
-      alert("✅ Commande envoyée !");
-      cart=[];updateCart();cartModal.style.display="none";customerName.value="";customerPhone.value="";
+  validateBtn.onclick=()=>{
+    if(cart.length===0){alert("Panier vide !");return;}
+    if(customerName.value.trim()===""){alert("Veuillez entrer votre nom");return;}
+    if(customerPhone.value.trim()===""){alert("Veuillez entrer votre téléphone");return;}
+
+    const orders=JSON.parse(localStorage.getItem("orders")||"[]");
+    const newOrder={
+      id:Date.now(),
+      client:customerName.value,
+      phone:customerPhone.value,
+      items:cart,
+      total:parseFloat(cartTotal.textContent),
+      date:new Date().toLocaleString()
     };
+    orders.push(newOrder);
+    localStorage.setItem("orders",JSON.stringify(orders));
+    alert("✅ Commande envoyée !");
+    cart=[];updateCart();cartModal.style.display="none";customerName.value="";customerPhone.value="";
+  };
 
-    // 🎯 appliquer recherche/filtre
-    searchInput.oninput=renderProducts;
-    priceFilter.onchange=renderProducts;
+  searchInput.oninput=renderProducts;
+  priceFilter.onchange=renderProducts;
 
-    // premier rendu
-    renderProducts();
-  </script>
+  renderProducts();
+</script>
 </body>
 </html>
+
