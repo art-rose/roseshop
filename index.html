@@ -51,59 +51,6 @@
     form.addEventListener("submit", function(e) {
       e.preventDefault();
 
-      fetch("https://<!DOCTYPE html>
-<html lang="ar">
-<head>
-  <meta charset="UTF-8">
-  <title>متجر أغلفة الورود</title>
-  <style>
-    body { font-family: Arial, sans-serif; direction: rtl; background: #f9f9f9; padding: 20px; }
-    .product { border: 1px solid #ddd; padding: 15px; margin: 10px; display: inline-block; text-align: center; background: #fff; border-radius: 10px; width: 220px; }
-    .product img { max-width: 100%; border-radius: 10px; }
-    .btn { background: #28a745; color: #fff; padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
-    .btn:hover { background: #218838; }
-    form { margin-top: 20px; padding: 15px; background: #fff; border-radius: 10px; border: 1px solid #ddd; width: 300px; }
-    input { width: 100%; padding: 8px; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; }
-  </style>
-</head>
-<body>
-
-  <h2>🛍️ متجر أغلفة الورود</h2>
-
-  <div class="product">
-    <img src="black-wrap.jpg" alt="غلاف أسود">
-    <h3>غلاف أسود</h3>
-    <button class="btn" onclick="addToCart('غلاف أسود')">إضافة للطلب</button>
-  </div>
-
-  <div class="product">
-    <img src="white-wrap.jpg" alt="غلاف أبيض">
-    <h3>غلاف أبيض</h3>
-    <button class="btn" onclick="addToCart('غلاف أبيض')">إضافة للطلب</button>
-  </div>
-
-  <h3>📦 نموذج الطلب</h3>
-  <form id="orderForm">
-    <input type="text" name="name" placeholder="الاسم الكامل" required>
-    <input type="text" name="phone" placeholder="رقم الهاتف" required>
-    <input type="text" id="cart" name="product" readonly>
-    <button type="submit" class="btn">✅ تأكيد الطلب</button>
-  </form>
-
-  <p id="msg"></p>
-
-  <script>
-    let cart = [];
-
-    function addToCart(product) {
-      cart.push(product);
-      document.getElementById("cart").value = cart.join(", ");
-    }
-
-    const form = document.getElementById("orderForm");
-    form.addEventListener("submit", function(e) {
-      e.preventDefault();
-
       fetch("https://script.google.com/macros/s/AKfycbz__f1rubbC6ys7mrQydzu6i8ReuswJTbTT_SlJ2DbumvuhdvnHAZ8p1Mj813l1RY6T/exec", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -127,27 +74,5 @@
   </script>
 
 </body>
-</html>", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name.value,
-          phone: form.phone.value,
-          product: form.product.value,
-          total: "—"
-        })
-      })
-      .then(response => response.text())
-      .then(data => {
-        document.getElementById("msg").innerText = "✅ تم إرسال الطلب بنجاح!";
-        form.reset();
-        cart = [];
-      })
-      .catch(error => {
-        document.getElementById("msg").innerText = "❌ خطأ، أعد المحاولة.";
-      });
-    });
-  </script>
-
-</body>
 </html>
+
