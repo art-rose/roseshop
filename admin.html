@@ -90,13 +90,4 @@
       if (confirm("هل تريد فعلاً حذف هذا الطلب؟")) {
         fetch(API_URL + `?action=delete&row=${rowNumber}`)
           .then(res => res.text())
-          .then(() => {
-            alert("✅ تم حذف الطلب");
-            loadOrders();
-          });
-      }
-    }
-  </script>
-
-</body>
-</html>
+          .then(() =>
