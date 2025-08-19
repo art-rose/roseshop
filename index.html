@@ -2,63 +2,43 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>متجر أغلفة الورود</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <style>
-    body { font-family: 'Arial', sans-serif; background: #f4f4f4; direction: rtl; padding: 0; margin: 0; color: #333; }
-    header { background-color: #28a745; padding: 15px 0; text-align: center; color: #fff; font-size: 24px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-    .container { display: flex; flex-wrap: wrap; justify-content: space-evenly; padding: 20px; }
-    .product { background: #fff; border-radius: 10px; width: 220px; margin: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease; }
-    .product:hover { transform: scale(1.05); }
-    .product img { width: 100%; border-radius: 10px; }
-    .product h3 { font-size: 18px; color: #333; margin: 10px 0; }
-    .btn { background-color: #28a745; color: white; padding: 12px; border: none; width: 100%; border-radius: 8px; cursor: pointer; transition: background-color 0.3s ease; font-size: 16px; }
-    .btn:hover { background-color: #218838; }
-    .form-container { background-color: #fff; border-radius: 10px; width: 320px; padding: 20px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
-    input { width: 100%; padding: 10px; margin: 8px 0; border-radius: 5px; border: 1px solid #ccc; font-size: 16px; }
-    .cart-summary { margin-top: 15px; padding: 10px; background-color: #e9f7e9; border-radius: 8px; text-align: center; }
-    .msg { text-align: center; font-size: 16px; font-weight: bold; margin-top: 20px; color: #28a745; }
-    .msg-error { color: #e74c3c; }
-    .loader { display: none; text-align: center; font-size: 20px; margin-top: 15px; }
-    .loader.active { display: block; }
+    body { font-family: Arial, sans-serif; direction: rtl; background: #f9f9f9; padding: 20px; }
+    .product { border: 1px solid #ddd; padding: 15px; margin: 10px; display: inline-block; text-align: center; background: #fff; border-radius: 10px; width: 220px; }
+    .product img { max-width: 100%; border-radius: 10px; }
+    .btn { background: #28a745; color: #fff; padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+    .btn:hover { background: #218838; }
+    form { margin-top: 20px; padding: 15px; background: #fff; border-radius: 10px; border: 1px solid #ddd; width: 300px; }
+    input { width: 100%; padding: 8px; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; }
   </style>
 </head>
 <body>
 
-  <header>🛍️ متجر أغلفة الورود</header>
+  <h2>🛍️ متجر أغلفة الورود</h2>
 
-  <div class="container">
-    <div class="product">
-      <img src="black-wrap.jpg" alt="غلاف أسود">
-      <h3>غلاف أسود</h3>
-      <button class="btn" onclick="addToCart('غلاف أسود', 30)">إضافة للطلب</button>
-    </div>
-
-    <div class="product">
-      <img src="white-wrap.jpg" alt="غلاف أبيض">
-      <h3>غلاف أبيض</h3>
-      <button class="btn" onclick="addToCart('غلاف أبيض', 25)">إضافة للطلب</button>
-    </div>
+  <div class="product">
+    <img src="black-wrap.jpg" alt="غلاف أسود">
+    <h3>غلاف أسود</h3>
+    <button class="btn" onclick="addToCart('غلاف أسود', 30)">إضافة للطلب</button>
   </div>
 
-  <div class="form-container">
-    <h3>📦 نموذج الطلب</h3>
-    <form id="orderForm">
-      <input type="text" name="name" placeholder="الاسم الكامل" required>
-      <input type="text" name="phone" placeholder="رقم الهاتف" required>
-      <input type="text" id="cart" name="product" readonly placeholder="المنتجات في سلة الشراء" required>
-      <div class="cart-summary">
-        <strong>إجمالي الطلب:</strong> <span id="totalPrice">0</span> د.ج
-      </div>
-      <button type="submit" class="btn">✅ تأكيد الطلب</button>
-    </form>
-
-    <div class="loader" id="loader">جارٍ إرسال الطلب...</div>
-    <p id="msg" class="msg"></p>
+  <div class="product">
+    <img src="white-wrap.jpg" alt="غلاف أبيض">
+    <h3>غلاف أبيض</h3>
+    <button class="btn" onclick="addToCart('غلاف أبيض', 25)">إضافة للطلب</button>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <h3>📦 نموذج الطلب</h3>
+  <form id="orderForm">
+    <input type="text" name="name" placeholder="الاسم الكامل" required>
+    <input type="text" name="phone" placeholder="رقم الهاتف" required>
+    <input type="text" id="cart" name="product" readonly>
+    <button type="submit" class="btn">✅ تأكيد الطلب</button>
+  </form>
+
+  <p id="msg"></p>
+
   <script>
     let cart = [];
     let total = 0;
@@ -67,7 +47,6 @@
       cart.push(product);
       total += price;
       document.getElementById("cart").value = cart.join(", ");
-      document.getElementById("totalPrice").innerText = total;
     }
 
     const form = document.getElementById("orderForm");
@@ -76,11 +55,8 @@
 
       if (form.name.value === "" || form.phone.value === "") {
         document.getElementById("msg").innerText = "❌ يرجى ملء جميع الحقول.";
-        document.getElementById("msg").classList.add("msg-error");
         return;
       }
-
-      document.getElementById("loader").classList.add("active");
 
       fetch("https://script.google.com/macros/s/AKfycbw6V5HDgtZ0vUYrOAbC1pn1qEmKtcFkeWdSfFmMQRmfA0BnDOydvUSOac-Ex1L95Ne0bw/exec", {
         method: "POST",
@@ -94,29 +70,13 @@
       })
       .then(response => response.text())
       .then(data => {
-        document.getElementById("loader").classList.remove("active");
-
-        Swal.fire({
-          title: '✅ تم إرسال الطلب بنجاح!',
-          text: 'شكرًا لك على طلبك، سنقوم بالتواصل معك قريبًا.',
-          icon: 'success',
-          confirmButtonText: 'موافق'
-        });
-
+        document.getElementById("msg").innerText = "✅ تم إرسال الطلب بنجاح!";
         form.reset();
         cart = [];
         total = 0;
-        document.getElementById("totalPrice").innerText = total;
       })
       .catch(error => {
-        document.getElementById("loader").classList.remove("active");
-
-        Swal.fire({
-          title: '❌ خطأ',
-          text: 'حدث خطأ، يرجى المحاولة مرة أخرى.',
-          icon: 'error',
-          confirmButtonText: 'موافق'
-        });
+        document.getElementById("msg").innerText = "❌ خطأ، أعد المحاولة.";
       });
     });
   </script>
