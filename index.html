@@ -3,190 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <title>RoseShop – Boutique</title>
-  <style>
-    body{font-family:Arial,sans-serif;background:#f9f9f9;margin:0}
-    header{background:#e91e63;color:#fff;padding:10px;display:flex;justify-content:space-between;align-items:center}
-    header h1{margin:0}
-    header button{background:#fff;color:#e91e63;border:none;padding:6px 12px;border-radius:6px;cursor:pointer}
-    .filters{display:flex;gap:10px;align-items:center;padding:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.1)}
-    .products{display:flex;gap:15px;flex-wrap:wrap;padding:20px}
-    .card{background:#fff;padding:10px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.1);width:200px}
-    .card button{background:#e91e63;color:#fff;border:none;padding:6px;margin-top:6px;border-radius:6px;cursor:pointer;width:100%}
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center}
-    .modal-content{background:#fff;padding:20px;border-radius:10px;max-width:400px;width:90%}
-    .cart-item{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #eee}
-    input,select,button{padding:6px}
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>RoseShop</h1>
-    <button id="openCart">🛒 Panier (<span id="cartCount">0</span>)</button>
+    <h1>🌹 RoseShop</h1>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="commande.html">Commandes</a>
+      <a href="admin.html">Admin</a>
+    </nav>
   </header>
 
-  <!-- 🔍 بحث و فلتر -->
-  <div class="filters">
-    <input type="text" id="searchInput" placeholder="🔍 Rechercher un produit...">
-    <label>Filtrer par prix:
-      <select id="priceFilter">
-        <option value="all">Tous</option>
-        <option value="low">Moins de 15 TND</option>
-        <option value="mid">15 - 20 TND</option>
-        <option value="high">Plus de 20 TND</option>
-      </select>
-    </label>
-  </div>
-
-  <main class="products" id="products"></main>
-
-  <!-- Panier -->
-  <div class="modal" id="cartModal">
-    <div class="modal-content">
-      <h2>🛒 Votre Panier</h2>
-      <div id="cartItems"></div>
-      <p><strong>Total: <span id="cartTotal">0</span> TND</strong></p>
-      
-      <!-- معلومات إضافية -->
-      <input type="text" id="customerName" placeholder="✍️ Votre nom">
-      <input type="text" id="customerPhone" placeholder="📞 Votre téléphone">
-      <button id="validateOrder">✅ Valider la commande</button>
-      <button onclick="cartModal.style.display='none'">Fermer</button>
+  <main>
+    <h2>Nos Produits</h2>
+    <div class="products" id="product-list">
+      <!-- produits seront chargés via script.js -->
     </div>
-  </div>
+  </main>
 
- <script>
-  const productsList=[
-    {name:"Papier de soie",price:12.9,image:"images/papier.jpg"},
-    {name:"Film transparent",price:18.5,image:"images/film.jpg"},
-    {name:"Sachet cadeau",price:22,image:"images/sachet.jpg"},
-    {name:"Papier kraft coloré",price:15,image:"images/craft.jpg"},
-    {name:"Ruban satin",price:8.5,image:"images/satin.jpg"},
-    {name:"Boîte luxe",price:25,image:"images/boite.jpg"}
-  ];
+  <footer>
+    <p>© 2025 RoseShop</p>
+  </footer>
 
-  const productsDiv=document.getElementById("products");
-  const cartModal=document.getElementById("cartModal");
-  const cartItemsDiv=document.getElementById("cartItems");
-  const cartCount=document.getElementById("cartCount");
-  const cartTotal=document.getElementById("cartTotal");
-  const openCart=document.getElementById("openCart");
-  const validateBtn=document.getElementById("validateOrder");
-  const customerName=document.getElementById("customerName");
-  const customerPhone=document.getElementById("customerPhone");
-  const searchInput=document.getElementById("searchInput");
-  const priceFilter=document.getElementById("priceFilter");
-
-  let cart=[];
-
-  // 🔄 afficher produits filtrés
-  function renderProducts(){
-    const search=searchInput.value.toLowerCase();
-    const filter=priceFilter.value;
-    productsDiv.innerHTML="";
-
-    productsList
-      .filter(p=>{
-        if(!p.name.toLowerCase().includes(search)) return false;
-        if(filter==="low" && p.price>=15) return false;
-        if(filter==="mid" && (p.price<15 || p.price>20)) return false;
-        if(filter==="high" && p.price<=20) return false;
-        return true;
-      })
-      .forEach(p=>{
-        const card=document.createElement("div");
-        card.className="card";
-        card.innerHTML=`
-          <img src="${p.image}" alt="${p.name}" style="width:100%;border-radius:6px;margin-bottom:8px">
-          <h3>${p.name}</h3>
-          <p>${p.price} TND</p>
-          <label>Quantité: <input type='number' value='1' min='1' style='width:60px'></label>
-          <button>Ajouter au panier</button>
-        `;
-       
-        const qtyInput=card.querySelector("input");
-        const addBtn=card.querySelector("button");
-
-        addBtn.onclick=()=>{
-          const qty=parseInt(qtyInput.value)||1;
-          cart.push({...p,qty});
-          updateCart();
-        };
-
-        productsDiv.appendChild(card);
-      });
-  }
-
-  function updateCart(){
-    cartItemsDiv.innerHTML="";
-    let total=0;
-    cart.forEach(item=>{
-      total+=item.price*item.qty;
-      const div=document.createElement("div");
-      div.className="cart-item";
-      div.textContent=`${item.name} (x${item.qty}) - ${(item.price*item.qty).toFixed(3)} TND`;
-      cartItemsDiv.appendChild(div);
-    });
-    cartCount.textContent=cart.length;
-    cartTotal.textContent=total.toFixed(3);
-  }
-
-  openCart.onclick=()=>cartModal.style.display="flex";
-
-  validateBtn.onclick=()=>{
-    if(cart.length===0){alert("Panier vide !");return;}
-    if(customerName.value.trim()===""){alert("Veuillez entrer votre nom");return;}
-    if(customerPhone.value.trim()===""){alert("Veuillez entrer votre téléphone");return;}
-
-    const orders=JSON.parse(localStorage.getItem("orders")||"[]");
-    const newOrder={
-      id:Date.now(),
-      client:customerName.value,
-      phone:customerPhone.value,
-      items:cart,
-      total:parseFloat(cartTotal.textContent),
-      date:new Date().toLocaleString()
-    };
-    orders.push(newOrder);
-    localStorage.setItem("orders",JSON.stringify(orders));
-    alert("✅ Commande envoyée !");
-    cart=[];updateCart();cartModal.style.display="none";customerName.value="";customerPhone.value="";
-  };
-
-  searchInput.oninput=renderProducts;
-  priceFilter.onchange=renderProducts;
-
-  renderProducts();
-</script>
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyDe2ABJQchgNULZOLaSUnQIvOXjgygbo1k",
-    authDomain: "roseshop-boutique.firebaseapp.com",
-    databaseURL: "https://roseshop-boutique-default-rtdb.firebaseio.com",
-    projectId: "roseshop-boutique",
-    storageBucket: "roseshop-boutique.firebasestorage.app",
-    messagingSenderId: "170327744198",
-    appId: "1:170327744198:web:6ec09116b8e66972a2c1c7",
-    measurementId: "G-XVFNGEF5XY"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
+  <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
 
 
 
