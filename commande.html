@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Commander – RoseShop</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>🌹 RoseShop – Commande</h1>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="admin.html">Admin</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Passer une commande</h2>
+    <form id="order-form">
+      <label for="name">Nom complet :</label>
+      <input type="text" id="name" required><br><br>
+
+      <label for="phone">Téléphone :</label>
+      <input type="text" id="phone" required><br><br>
+
+      <label for="product">Produit :</label>
+      <select id="product" required>
+        <option value="">-- Choisir un produit --</option>
+        <option>Rose Rouge</option>
+        <option>Rose Blanche</option>
+        <option>Rose Rose</option>
+        <option>Emballage Noir</option>
+      </select><br><br>
+
+      <button type="submit">Valider la commande</button>
+    </form>
+
+    <p id="confirmation" style="color:green; font-weight:bold; display:none;">
+      ✅ Votre commande a été envoyée avec succès !
+    </p>
+  </main>
+
+  <script>
+    document.getElementById("order-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+      const product = document.getElementById("product").value;
+
+      console.log("Commande envoyée :", name, phone, product);
+
+      document.getElementById("confirmation").style.display = "block";
+      this.reset();
+    });
+  </script>
+</body>
+</html>
