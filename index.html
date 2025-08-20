@@ -157,8 +157,50 @@
 
   renderProducts();
 </script>
+  <!-- Firebase App -->
+<script type="module">
+  // استيراد Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } 
+    from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+  // ✅ هنا تلصق معلومات مشروعك من Firebase console
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  // تهيئة التطبيق
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // مثال: إضافة طلب جديد للـ Firestore
+  async function addOrder() {
+    try {
+      await addDoc(collection(db, "orders"), {
+        clientName: "Mahdi",
+        phone: "22233444",
+        product: "Rose Rouge",
+        price: 25,
+        status: "en attente",
+        createdAt: serverTimestamp()
+      });
+      alert("✅ الطلب تم إرساله !");
+    } catch (e) {
+      console.error("خطأ:", e);
+    }
+  }
+
+  // نربط الزر بالوظيفة
+  document.getElementById("btnOrder").addEventListener("click", addOrder);
+</script>
 </body>
 </html>
+
 
 
 
