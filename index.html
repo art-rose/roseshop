@@ -158,14 +158,9 @@
   renderProducts();
 </script>
 <script type="module">
-  // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+  import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
   const firebaseConfig = {
     apiKey: "AIzaSyDe2ABJQchgNULZOLaSUnQIvOXjgygbo1k",
     authDomain: "roseshop-boutique.firebaseapp.com",
@@ -177,12 +172,43 @@
     measurementId: "G-LTHRE6MTEJ"
   };
 
-  // Initialize Firebase
+  // ✅ Initialisation
   const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+  const db = getDatabase(app);
+
+  // ✅ استبدل الكود اللي يستعمل localStorage:
+  validateBtn.onclick = () => {
+    if(cart.length===0){alert("Panier vide !");return;}
+    if(customerName.value.trim()===""){alert("Veuillez entrer votre nom");return;}
+    if(customerPhone.value.trim()===""){alert("Veuillez entrer votre téléphone");return;}
+
+    const newOrder = {
+      client: customerName.value,
+      phone: customerPhone.value,
+      items: cart,
+      total: parseFloat(cartTotal.textContent),
+      date: new Date().toLocaleString()
+    };
+
+    // إرسال الطلب إلى Firebase
+    const ordersRef = ref(db, "orders");
+    const newOrderRef = push(ordersRef);
+    set(newOrderRef, newOrder)
+      .then(()=>{
+        alert("✅ Commande envoyée à Firebase !");
+        cart=[];updateCart();
+        cartModal.style.display="none";
+        customerName.value="";
+        customerPhone.value="";
+      })
+      .catch(err=>{
+        alert("❌ Erreur: "+err);
+      });
+  };
 </script>
 </body>
 </html>
+
 
 
 
