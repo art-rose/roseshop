@@ -2,143 +2,61 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>RoseShop – Admin</title>
-  <style>
-    body{font-family:Arial,sans-serif;background:#f4f4f4;padding:20px}
-    h1{color:#e91e63}
-    table{width:100%;border-collapse:collapse;background:#fff;margin-top:10px}
-    th,td{border:1px solid #ddd;padding:8px;text-align:center}
-    th{background:#e91e63;color:#fff}
-    button{padding:6px 10px;border:none;border-radius:6px;cursor:pointer;margin:4px}
-    .deleteBtn{background:#e74c3c;color:#fff}
-    .logoutBtn{background:#333;color:#fff;float:right}
-    .exportBtn{background:#27ae60;color:#fff}
-    .pdfBtn{background:#2980b9;color:#fff}
-  </style>
+  <title>Admin – RoseShop</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>📋 Administration RoseShop</h1>
-  <button class="logoutBtn" onclick="logout()">🚪 Déconnexion</button>
-  <button class="exportBtn" onclick="exportExcel()">📥 Export Excel</button>
-  <button class="pdfBtn" onclick="exportPDF()">📄 Export PDF</button>
+  <header>
+    <h1>🌹 RoseShop – Admin</h1>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="commande.html">Commandes</a>
+    </nav>
+  </header>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Client</th>
-        <th>Téléphone</th>
-        <th>Produits</th>
-        <th>Total</th>
-        <th>Date</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody id="ordersTable"></tbody>
-  </table>
+  <main>
+    <h2>Espace Admin</h2>
+    <div id="login-section">
+      <p>Veuillez entrer le mot de passe :</p>
+      <input type="password" id="admin-password" placeholder="Mot de passe">
+      <button onclick="checkLogin()">Se connecter</button>
+      <p id="error" style="color:red;"></p>
+    </div>
 
-  <!-- مكتبات التصدير -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <div id="orders-section" style="display:none;">
+      <h3>📋 Liste des commandes</h3>
+      <ul id="orders-list">
+        <!-- Commandes apparaîtront ici -->
+      </ul>
+    </div>
+  </main>
 
   <script>
-    // التحقق من كلمة السر
-    const correctPassword="mahdinourhene2025"; 
-    if(!sessionStorage.getItem("adminLogged")){
-      const pwd=prompt("Entrez le mot de passe admin:");
-      if(pwd!==correctPassword){
-        alert("❌ Mot de passe incorrect !");
-        location.href="client.html"; 
+    const ADMIN_PASSWORD = "1234"; // 🔐 غيرها بكلمة سر خاصة بك
+
+    function checkLogin() {
+      const input = document.getElementById("admin-password").value;
+      if (input === ADMIN_PASSWORD) {
+        document.getElementById("login-section").style.display = "none";
+        document.getElementById("orders-section").style.display = "block";
+
+        // Exemple commandes (لاحقًا نربطها بقاعدة البيانات Firebase)
+        const orders = [
+          "Rose Rouge x2 – Client: Ali",
+          "Rose Blanche x1 – Client: Sara",
+          "Emballage Noir x3 – Client: Mahdi"
+        ];
+
+        const ordersList = document.getElementById("orders-list");
+        orders.forEach(order => {
+          const li = document.createElement("li");
+          li.textContent = order;
+          ordersList.appendChild(li);
+        });
       } else {
-        sessionStorage.setItem("adminLogged",true);
+        document.getElementById("error").textContent = "Mot de passe incorrect.";
       }
     }
-
-    const ordersTable=document.getElementById("ordersTable");
-
-    function loadOrders(){
-      const orders=JSON.parse(localStorage.getItem("orders")||"[]");
-      ordersTable.innerHTML="";
-
-      if(orders.length===0){
-        ordersTable.innerHTML="<tr><td colspan='6'>Aucune commande</td></tr>";
-        return;
-      }
-
-      orders.forEach(order=>{
-        const tr=document.createElement("tr");
-        tr.innerHTML=`
-          <td>${order.client}</td>
-          <td>${order.phone}</td>
-          <td>
-            ${order.items.map(it=>`${it.name} (x${it.qty})`).join("<br>")}
-          </td>
-          <td>${order.total.toFixed(3)} TND</td>
-          <td>${order.date}</td>
-          <td><button class="deleteBtn" onclick="deleteOrder(${order.id})">❌ Supprimer</button></td>
-        `;
-        ordersTable.appendChild(tr);
-      });
-    }
-
-    function deleteOrder(id){
-      let orders=JSON.parse(localStorage.getItem("orders")||"[]");
-      orders=orders.filter(o=>o.id!==id);
-      localStorage.setItem("orders",JSON.stringify(orders));
-      loadOrders();
-    }
-
-    function logout(){
-      sessionStorage.removeItem("adminLogged");
-      location.href="client.html";
-    }
-
-    // 📥 Export Excel
-    function exportExcel(){
-      const orders=JSON.parse(localStorage.getItem("orders")||"[]");
-      if(orders.length===0){alert("❌ Pas de commandes à exporter");return;}
-
-      const data=orders.map(o=>({
-        Client:o.client,
-        Téléphone:o.phone,
-        Produits:o.items.map(it=>`${it.name} (x${it.qty})`).join(", "),
-        Total:o.total+" TND",
-        Date:o.date
-      }));
-
-      const ws=XLSX.utils.json_to_sheet(data);
-      const wb=XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb,ws,"Commandes");
-      XLSX.writeFile(wb,"commandes.xlsx");
-    }
-
-    // 📄 Export PDF
-    async function exportPDF(){
-      const { jsPDF } = window.jspdf;
-      const doc=new jsPDF();
-
-      const orders=JSON.parse(localStorage.getItem("orders")||"[]");
-      if(orders.length===0){alert("❌ Pas de commandes à exporter");return;}
-
-      doc.setFontSize(14);
-      doc.text("Liste des commandes - RoseShop",10,10);
-
-      let y=20;
-      orders.forEach((o,i)=>{
-        doc.setFontSize(12);
-        doc.text(`Client: ${o.client}`,10,y);
-        doc.text(`Tel: ${o.phone}`,80,y);
-        doc.text(`Total: ${o.total} TND`,140,y);
-        y+=6;
-        doc.setFontSize(10);
-        doc.text(`Produits: ${o.items.map(it=>`${it.name} (x${it.qty})`).join(", ")}`,10,y);
-        y+=10;
-        if(y>270){doc.addPage();y=20;}
-      });
-
-      doc.save("commandes.pdf");
-    }
-
-    loadOrders();
   </script>
 </body>
 </html>
